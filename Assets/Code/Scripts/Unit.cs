@@ -4,14 +4,10 @@ using UnityEngine;
 namespace Code.Scripts
 {
     [Serializable]
-    public class Unit
+    [CreateAssetMenu(menuName = "Units/New Unit", order = 0, fileName = "Unit")]
+    public class Unit : ScriptableObject
     {
-        public Transform SceneObject;
-        public int Level;
-
-        public Unit()
-        {
-            
-        }
+        public GameObject prefab;
+        public int level;
     }
 }
