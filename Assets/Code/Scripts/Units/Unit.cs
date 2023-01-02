@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Code.Scripts
+namespace Code.Scripts.Units
 {
     [Serializable]
     [CreateAssetMenu(menuName = "Units/New Unit", order = 0, fileName = "Unit")]
