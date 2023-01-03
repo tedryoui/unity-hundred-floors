@@ -17,13 +17,22 @@ namespace Code.Scripts.Core
         private void Awake()
         {
             _group.Initialize(transform);
+            
+            TestUnit();
         }
 
         private void Update()
         {
-            TestInput();
+            //TestInput();
 
             _group.UnitsUpdateCallback?.Invoke();
+        }
+
+        private void TestUnit()
+        {
+            GameObject unit;
+            unit = Instantiate(lvl1Unit.prefab, Vector3.zero, Quaternion.identity);
+            _group.Add(unit.transform, lvl1Unit.level);
         }
 
         private void TestInput()
