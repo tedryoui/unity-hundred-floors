@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Services;
 using Code.Scripts.Units;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -13,32 +14,39 @@ namespace Code.Scripts.Core
         [Header("Player`s references")]
         private Transform _playerTransform;
         [SerializeField] private Transform _groupTransform;
-        public Action UnitsUpdateCallback;
+        private Action _unitsUpdateCallback;
 
-        [Space]
-        [Header("Group settings")]
-        [SerializeField] private List<SceneUnit> _units = new();
-        [SerializeField] private CircleFormationService _formationService;
+        [Space] [Header("Group settings")] 
+        [SerializeField] private int _unitsLimit;
+        [SerializeField] private float _unitSpeed;
+        private List<GroupUnit> _units = new();
+        [SerializeField] private FormationService _formationService;
 
         public void Initialize(Transform playerTransform)
         {
             _playerTransform = playerTransform;
 
-            _formationService.Initialize(
-                ref _playerTransform
-            );
+            _formationService.Initialize(ref _playerTransform);
         }
 
-        public void Add(Transform unitTransform, int lvl)
+        public bool Add(Transform unitTransform, int lvl)
         {
-            unitTransform.transform.parent = _groupTransform;
-
-            var unit = new SceneUnit
+            if (_units.Count >= _unitsLimit)
             {
-                level = lvl,
-                transform = unitTransform
-            };
-            UnitsUpdateCallback += unit.Update;
+                GroupHelpers.ReactGroupOverflow(lvl);
+                return false;
+            }
+            else
+            {
+                ApplyAddition(unitTransform, lvl);
+                return true;
+            }
+        }
+
+        private void ApplyAddition(Transform unitTransform, int lvl)
+        {
+            var unit = GroupHelpers.ConstructGroupUnit(unitTransform, _unitSpeed, lvl);
+            GroupHelpers.AssignGroupUnitToGroup(unit, _groupTransform, ref _unitsUpdateCallback);
 
             _units.Add(unit);
             Reform();
@@ -47,14 +55,10 @@ namespace Code.Scripts.Core
         public void Remove(int lvl)
         {
             var unit = _units.FirstOrDefault(x => x.level.Equals(lvl));
-
+            
             if (unit != null)
             {
-                Object.Destroy(unit.transform.gameObject);
-
-                UnitsUpdateCallback -= unit.Update;
-                _units.Remove(unit);
-
+                GroupHelpers.ProvideUnitDestruction(unit, ref _unitsUpdateCallback, _units);
                 Reform();
             }
         }
@@ -62,8 +66,13 @@ namespace Code.Scripts.Core
         private void Reform()
         {
             _units = _units.OrderByDescending(x => x.level).ToList();
+            UpdateGroup();
+        }
 
+        public void UpdateGroup()
+        {
             _formationService.Form(ref _units);
+            _unitsUpdateCallback?.Invoke();
         }
     }
 }

@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Units;
 using UnityEngine;
 
-namespace Code.Scripts.Units
+namespace Code.Scripts.Services
 {
     [Serializable]
-    public class CircleFormationService
+    public class FormationService
     {
-        [Header("Player`s references")] [SerializeField]
         private Transform _playerTransform;
 
-        [Space] [Header("Formation settings")] [SerializeField]
-        private int _baseOrbitUnitAmount;
+        [Header("Formation settings")] 
+        [SerializeField] private int _baseOrbitUnitAmount;
         [SerializeField] private int _orbitUnitIncreaseAmount;
         [SerializeField] private float _orbitOffset;
         [Range(0, 360)] 
         [SerializeField] private int _orbitAngleOffset;
 
-        private List<SceneUnit> _cachedUnits;
+        private List<GroupUnit> _cachedUnits;
 
         public int OrbitsAmount => Mathf.CeilToInt((_cachedUnits.Count - 1.0f) / _baseOrbitUnitAmount);
 
@@ -27,13 +27,12 @@ namespace Code.Scripts.Units
             _playerTransform = playerTransform;
         }
 
-        public void Form(ref List<SceneUnit> units)
+        public void Form(ref List<GroupUnit> units)
         {
             _cachedUnits = units;
             if (_cachedUnits.Count.Equals(0)) return;
 
             PlaceCenterUnit();
-
             PlaceOrbitalUnits();
         }
 
@@ -57,7 +56,7 @@ namespace Code.Scripts.Units
                 var unitPosition = ComputeUnitPosition(orbitUnitsAmount, orbitNumber, i);
 
                 var unit = units[i];
-                unit.Placement = unitPosition;
+                unit.TargetPosition = unitPosition;
             }
         }
 
@@ -66,7 +65,7 @@ namespace Code.Scripts.Units
             var centerPosition = _playerTransform.position;
 
             var unit = _cachedUnits[0];
-            unit.Placement = centerPosition;
+            unit.TargetPosition = centerPosition;
         }
 
         private int ComputeUnitsBeforeOrbit(int layerNumber)

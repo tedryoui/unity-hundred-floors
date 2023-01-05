@@ -18,21 +18,29 @@ namespace Code.Scripts.Core
         {
             _group.Initialize(transform);
             
-            TestUnit();
+            TestUnits();
         }
 
         private void Update()
         {
             //TestInput();
-
-            _group.UnitsUpdateCallback?.Invoke();
+            _group.UpdateGroup();
         }
 
-        private void TestUnit()
+        private void TestUnits()
         {
-            GameObject unit;
-            unit = Instantiate(lvl1Unit.prefab, Vector3.zero, Quaternion.identity);
-            _group.Add(unit.transform, lvl1Unit.level);
+            var amount = Random.Range(1, 10);
+
+            for (int i = 0; i < amount; i++)
+            {
+                GameObject unit;
+                Vector3 pos = new(Random.Range(0.0f, 10.0f), 0.0f, Random.Range(0.0f, 10.0f));
+                unit = Instantiate(lvl1Unit.prefab, pos, Quaternion.identity);
+                
+                bool result = _group.Add(unit.transform, lvl1Unit.level);
+                if(!result)
+                    Destroy(unit);
+            }
         }
 
         private void TestInput()

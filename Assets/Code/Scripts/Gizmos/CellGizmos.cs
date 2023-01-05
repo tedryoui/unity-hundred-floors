@@ -2,7 +2,7 @@
 
 namespace Code.Scripts.Gizmos
 {
-    public class CeilGizmos : MonoBehaviour
+    public class CellGizmos : MonoBehaviour
     {
         public bool isVisible;
         [SerializeField] private Vector3 _playerOverlapPosition;
