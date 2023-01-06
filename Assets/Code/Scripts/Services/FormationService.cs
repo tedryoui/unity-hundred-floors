@@ -21,6 +21,7 @@ namespace Code.Scripts.Services
         private List<GroupUnit> _cachedUnits;
 
         public int OrbitsAmount => Mathf.CeilToInt((_cachedUnits.Count - 1.0f) / _baseOrbitUnitAmount);
+        public float OrbitOffset => _orbitOffset;
 
         public void Initialize(ref Transform playerTransform)
         {

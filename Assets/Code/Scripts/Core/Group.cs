@@ -11,7 +11,6 @@ namespace Code.Scripts.Core
     [Serializable]
     public class Group
     {
-        [Header("Player`s references")]
         private Transform _playerTransform;
         [SerializeField] private Transform _groupTransform;
         private Action _unitsUpdateCallback;
@@ -22,6 +21,10 @@ namespace Code.Scripts.Core
         private List<GroupUnit> _units = new();
         [SerializeField] private FormationService _formationService;
         [SerializeField] private MergeService _mergeService;
+
+        public Action OnChange;
+        public float OrbitOffset => _formationService.OrbitOffset;
+        public int OrbitsAmount => _formationService.OrbitsAmount;
 
         public void Initialize(Transform playerTransform)
         {
@@ -51,6 +54,7 @@ namespace Code.Scripts.Core
             GroupHelpers.AssignGroupUnitToGroup(unit, _groupTransform, ref _unitsUpdateCallback);
 
             _units.Add(unit);
+
             Reform();
         }
 
@@ -79,12 +83,15 @@ namespace Code.Scripts.Core
         public void Merge()
         {
             _mergeService.Merge(_units);
+            
+            OnChange?.Invoke();
         }
         
         private void Reform()
         {
             _units = _units.OrderBy(x => x.settings.order).ToList();
             UpdateGroup();
+            OnChange?.Invoke();
         }
 
         public void UpdateGroup()

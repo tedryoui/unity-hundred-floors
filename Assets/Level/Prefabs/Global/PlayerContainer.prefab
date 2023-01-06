@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6009375886604101499}
-  - component: {fileID: 3257338921551738124}
+  - component: {fileID: 2887944355961643780}
   - component: {fileID: 6009375886604101498}
-  m_Layer: 13
+  m_Layer: 17
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,25 +26,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6009375886604101444}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -20, y: 0, z: 0}
+  m_LocalPosition: {x: -21, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9012860536263105585}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3257338921551738124
-BoxCollider:
+--- !u!135 &2887944355961643780
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6009375886604101444}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6009375886604101498
 MonoBehaviour:
@@ -58,6 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d8ff8f2e7c04eaea83c0ab989a861c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliderAdditionalRadius: 0
   _group:
     _groupTransform: {fileID: 6009375886772982575}
     _unitsLimit: 10
@@ -67,9 +68,6 @@ MonoBehaviour:
       _orbitUnitIncreaseAmount: 4
       _orbitOffset: 2.5
       _orbitAngleOffset: 90
-  lvl1Unit: {fileID: 11400000, guid: 72361c3e40d92a646888083fe24b493e, type: 2}
-  lvl2Unit: {fileID: 11400000, guid: 2ef4cae5ad9188542876f838e3035c3f, type: 2}
-  lvl3Unit: {fileID: 11400000, guid: 61c3f3991015805469e549148b490885, type: 2}
 --- !u!1 &6009375886772982568
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,6 +124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9012860536263105585}
+  - component: {fileID: 377614452}
   m_Layer: 0
   m_Name: PlayerContainer
   m_TagString: Untagged
@@ -150,3 +149,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &377614452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9012860536263105584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be6dd7e9ba54a10ab3535dc5bd57a9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {fileID: 6009375886604101499}
+  orbitOffset: 2.5
+  orbitsAmount: 3
+  additionalDistance: 2

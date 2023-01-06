@@ -1,47 +1,47 @@
 ﻿using System;
 using Code.Scripts.Units;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 namespace Code.Scripts.Core
 {
     public class Player : MonoBehaviour
     {
+        public enum State {Stay, Move, Battle, Release}
+        
+        [SerializeField] private int _colliderAdditionalRadius;
         [SerializeField] private Group _group;
-
-        public Unit lvl1Unit;
-        public Unit lvl2Unit;
-        public Unit lvl3Unit;
+        private SphereCollider _collider;
+        [HideInInspector] public State state;
         public Group Group => _group;
 
         private void Awake()
         {
-            _group.Initialize(transform);
+            _collider = GetComponent<SphereCollider>();
             
-            //TestUnits();
+            _group.Initialize(transform);
+            _group.OnChange += UpdateCollider;
         }
 
         private void Update()
         {
-            TestInput();
+            switch (state)
+            {
+                case State.Battle:
+                    return;
+            }
             
+            TestInput();
             _group.UpdateGroup();
         }
 
-        private void TestUnits()
+        private void UpdateCollider()
         {
-            var amount = Random.Range(1, 10);
+            var orbitOffset = Group.OrbitOffset;
+            var orbitsAmount = Group.OrbitsAmount + 1;
 
-            for (int i = 0; i < amount; i++)
-            {
-                GameObject unit;
-                Vector3 pos = new(Random.Range(0.0f, 10.0f), 0.0f, Random.Range(0.0f, 10.0f));
-                unit = Instantiate(lvl1Unit.prefab, pos, Quaternion.identity);
-                
-                bool result = _group.Add(unit.transform, lvl1Unit);
-                if(!result)
-                    Destroy(unit);
-            }
+            _collider.radius = orbitOffset * orbitsAmount + _colliderAdditionalRadius;
         }
 
         private void TestInput()
