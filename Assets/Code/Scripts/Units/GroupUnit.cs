@@ -7,9 +7,10 @@ namespace Code.Scripts.Units
     public class GroupUnit
     {
         public Transform objectTransform;
-        private Vector3 _targetPosition;
-        public int level;
+        public Unit settings;
         public float speed;
+
+        private Vector3 _targetPosition;
 
         public Vector3 TargetPosition
         {

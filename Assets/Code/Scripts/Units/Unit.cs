@@ -7,7 +7,8 @@ namespace Code.Scripts.Units
     [CreateAssetMenu(menuName = "Units/New Unit", order = 0, fileName = "Unit")]
     public class Unit : ScriptableObject
     {
+        public Unit nextLevel;
         public GameObject prefab;
-        public int level;
+        public int order;
     }
 }

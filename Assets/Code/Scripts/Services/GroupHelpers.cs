@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -9,17 +10,23 @@ namespace Code.Scripts.Services
 {
     public class GroupHelpers
     {
-        public static void ReactGroupOverflow(int lvl)
+        public static void ReactGroupOverflow(Unit settings)
         {
-            Debug.Log($"Added {lvl} coins to player wallet!");
+            Debug.Log($"Added {settings.order} coins to player wallet!");
         }
 
-        public static GroupUnit ConstructGroupUnit(Transform unitTransform, float unitSpeed, int lvl)
+        public static void InstantiateToGroup(Unit settings, Vector3 spawnPos, Group group)
+        {
+            GameObject unit = Object.Instantiate(settings.prefab, spawnPos, Quaternion.identity);
+            group.Add(unit.transform, settings);
+        }
+
+        public static GroupUnit ConstructGroupUnit(Transform unitTransform, float unitSpeed, Unit settings)
         {
 
             var unit = new GroupUnit
             {
-                level = lvl,
+                settings = settings,
                 objectTransform = unitTransform,
                 speed = unitSpeed
             };
@@ -39,6 +46,11 @@ namespace Code.Scripts.Services
 
             unitsUpdateCallback -= unit.Update;
             units.Remove(unit);
+        }
+
+        public static void ReactUnitOvergrade(Unit identifier, int unitsCount)
+        {
+            Debug.Log($"Added {identifier.order} coins to player wallet!");
         }
     }
 }

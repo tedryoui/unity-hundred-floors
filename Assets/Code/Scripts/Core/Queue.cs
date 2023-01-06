@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Services;
 using Code.Scripts.Units;
 using UnityEngine;
 using Object = System.Object;
@@ -23,9 +24,8 @@ namespace Code.Scripts.Core
         [SerializeField] private int _unitsAmount;
         [SerializeField] private float _delayBetweenOffsets;
 
-        [Space]
-        [Header("Queue units settings")]
-        [SerializeField] private GameObject _unitPrefab;
+        [Space] [Header("Queue units settings")] 
+        [SerializeField] private Unit _unitPrefab;
         [SerializeField] private List<AnimationCurve> _speedInterpolations;
         [SerializeField] private float _unitSpeed;
 
@@ -40,7 +40,7 @@ namespace Code.Scripts.Core
             for (int i = 0; i < _unitsAmount; i++)
             {
                 Vector3 pos = _queueStartPosition.position + _queueDirection * i * _unitToUnitOffset;
-                GameObject obj = GameObject.Instantiate(_unitPrefab, pos, Quaternion.identity, _unitsGroup);
+                GameObject obj = GameObject.Instantiate(_unitPrefab.prefab, pos, Quaternion.identity, _unitsGroup);
 
                 QueueUnit unit = new QueueUnit()
                 {
@@ -78,6 +78,14 @@ namespace Code.Scripts.Core
                 unit.Status = QueueUnit.QueueUnitStatus.Move;
                 yield return new WaitForSeconds(_delayBetweenOffsets);
             }
+        }
+
+        public void SetFirstUnit()
+        {
+            _player.gameObject.SetActive(true);
+            _player.Group.Add(Head.Transform, _unitPrefab);
+            
+            RemoveHead();
         }
 
         private void Update()

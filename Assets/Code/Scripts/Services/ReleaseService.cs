@@ -36,7 +36,7 @@ namespace Code.Scripts.Services
         {
             for (var i = 0; i < cachedObjects.Count; i++)
             {
-                var unitLevel = units[i].level;
+                var unitLevel = units[i];
                 var unitObject = cachedObjects[i];
                 
                 bool result = player.Group.Add(unitObject.transform, unitLevel);

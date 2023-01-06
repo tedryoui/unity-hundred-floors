@@ -21,40 +21,42 @@ namespace Code.Scripts.Core
         [SerializeField] private float _unitSpeed;
         private List<GroupUnit> _units = new();
         [SerializeField] private FormationService _formationService;
+        [SerializeField] private MergeService _mergeService;
 
         public void Initialize(Transform playerTransform)
         {
             _playerTransform = playerTransform;
 
             _formationService.Initialize(ref _playerTransform);
+            _mergeService.Initialize(this);
         }
 
-        public bool Add(Transform unitTransform, int lvl)
+        public bool Add(Transform unitTransform, Unit settings)
         {
             if (_units.Count >= _unitsLimit)
             {
-                GroupHelpers.ReactGroupOverflow(lvl);
+                GroupHelpers.ReactGroupOverflow(settings);
                 return false;
             }
             else
             {
-                ApplyAddition(unitTransform, lvl);
+                ApplyAddition(unitTransform, settings);
                 return true;
             }
         }
 
-        private void ApplyAddition(Transform unitTransform, int lvl)
+        private void ApplyAddition(Transform unitTransform, Unit settings)
         {
-            var unit = GroupHelpers.ConstructGroupUnit(unitTransform, _unitSpeed, lvl);
+            var unit = GroupHelpers.ConstructGroupUnit(unitTransform, _unitSpeed, settings);
             GroupHelpers.AssignGroupUnitToGroup(unit, _groupTransform, ref _unitsUpdateCallback);
 
             _units.Add(unit);
             Reform();
         }
 
-        public void Remove(int lvl)
+        public void Remove(int order)
         {
-            var unit = _units.FirstOrDefault(x => x.level.Equals(lvl));
+            var unit = _units.FirstOrDefault(x => x.settings.order.Equals(order));
             
             if (unit != null)
             {
@@ -63,9 +65,25 @@ namespace Code.Scripts.Core
             }
         }
 
+        public void RemoveAt(int at)
+        {
+            var unit = _units[at];
+            
+            if (unit != null)
+            {
+                GroupHelpers.ProvideUnitDestruction(unit, ref _unitsUpdateCallback, _units);
+                Reform();
+            }
+        }
+
+        public void Merge()
+        {
+            _mergeService.Merge(_units);
+        }
+        
         private void Reform()
         {
-            _units = _units.OrderByDescending(x => x.level).ToList();
+            _units = _units.OrderBy(x => x.settings.order).ToList();
             UpdateGroup();
         }
 

@@ -5,8 +5,6 @@ using Code.Scripts.Units;
 using UnityEngine;
 using UnityEngine.Events;
 
-// TODO - UnitReleaseService
-
 namespace Code.Scripts.Core
 {
     public class Cell : MonoBehaviour

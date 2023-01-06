@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
+using UnityEngine.Events;
 using Queue = Code.Scripts.Core.Queue;
 
 namespace Code.Scripts.Cutscenes
@@ -14,6 +15,7 @@ namespace Code.Scripts.Cutscenes
         [SerializeField] private Queue _queue;
         [SerializeField] private Camera _followCamera;
         [SerializeField] private float _delayBeforeDestroy;
+        [SerializeField] private UnityEvent _onCutsceneCloseEvent;
         private Camera _mainCamera;
 
         private void Start()
@@ -38,8 +40,7 @@ namespace Code.Scripts.Cutscenes
             yield return new WaitWhile(() => _queue.Head.Status.Equals(QueueUnit.QueueUnitStatus.Move));
             Camera.SetupCurrent(_mainCamera);
             yield return new WaitForSeconds(_delayBeforeDestroy);
-
-            ReleasePlayer();
+            
             CloseCutscene();
         }
 
@@ -49,15 +50,10 @@ namespace Code.Scripts.Cutscenes
             _player.gameObject.SetActive(false);
         }
 
-        private void ReleasePlayer()
-        {
-            _player.Group.Add(_queue.Head.Transform, 1);
-            _player.gameObject.SetActive(true);
-        }
-
         private void CloseCutscene()
         {
-            _queue.RemoveHead();
+            _onCutsceneCloseEvent?.Invoke();
+
             Destroy(gameObject);
         }
     }
