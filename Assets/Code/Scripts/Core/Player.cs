@@ -28,8 +28,7 @@ namespace Code.Scripts.Core
         {
             switch (state)
             {
-                case State.Battle:
-                    return;
+                
             }
             
             TestInput();

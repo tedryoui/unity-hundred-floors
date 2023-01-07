@@ -26,6 +26,8 @@ namespace Code.Scripts.Core
         public float OrbitOffset => _formationService.OrbitOffset;
         public int OrbitsAmount => _formationService.OrbitsAmount;
 
+        public List<GroupUnit> GetUnits => _units;
+
         public void Initialize(Transform playerTransform)
         {
             _playerTransform = playerTransform;

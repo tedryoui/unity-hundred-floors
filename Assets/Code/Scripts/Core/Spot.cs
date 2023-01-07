@@ -32,8 +32,6 @@ namespace Code.Scripts.Core
         {
             switch (state)
             {
-                case State.Battle:
-                    return;
                 case State.Dead:
                     Destroy(gameObject);
                     break;
