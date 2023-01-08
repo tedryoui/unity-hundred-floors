@@ -9,7 +9,7 @@ namespace Code.Scripts.Units
     {
         public Unit nextLevel;
         public GameObject prefab;
-        public int order;
+        public int points;
         public float triggerRadius;
     }
 }

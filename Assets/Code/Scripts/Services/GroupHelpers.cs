@@ -12,32 +12,13 @@ namespace Code.Scripts.Services
     {
         public static void ReactGroupOverflow(Unit settings)
         {
-            Debug.Log($"Added {settings.order} coins to player wallet!");
+            
         }
 
-        public static void InstantiateToGroup(Unit settings, Vector3 spawnPos, Group group)
+        public static void InstantiateToGroup(Group group, Unit settings, Vector3 spawnPos)
         {
             GameObject unit = Object.Instantiate(settings.prefab, spawnPos, Quaternion.identity);
-            group.Add(unit.transform, settings);
-        }
-
-        public static GroupUnit ConstructGroupUnit(Transform unitTransform, float unitSpeed, Unit settings)
-        {
-
-            var unit = new GroupUnit
-            {
-                settings = settings,
-                objectTransform = unitTransform,
-                speed = unitSpeed
-            };
-            
-            return unit;
-        }
-
-        public static void AssignGroupUnitToGroup(GroupUnit unit, Transform unitParent, ref Action unitsUpdateCallback)
-        {
-            unit.objectTransform.parent = unitParent;
-            unitsUpdateCallback += unit.Update;
+            group.GroupService.Add(unit.transform, settings);
         }
 
         public static void ProvideUnitDestruction(GroupUnit unit, ref Action unitsUpdateCallback, List<GroupUnit> units)
@@ -46,11 +27,6 @@ namespace Code.Scripts.Services
 
             unitsUpdateCallback -= unit.Update;
             units.Remove(unit);
-        }
-
-        public static void ReactUnitOvergrade(Unit identifier, int unitsCount)
-        {
-            Debug.Log($"Added {identifier.order} coins to player wallet!");
         }
     }
 }

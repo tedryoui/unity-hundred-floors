@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextLevel: {fileID: 0}
   prefab: {fileID: 7148646689077680258, guid: ac5a4c1b9d620c04b9749468d07a6e8f, type: 3}
-  order: 2
+  points: 3
   triggerRadius: 3

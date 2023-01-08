@@ -11,6 +11,7 @@ namespace Code.Scripts.Mocks
     {
         public Player player;
         public Spot spot;
+        public Spot spot2;
 
         public Unit level1Unit;
 
@@ -18,31 +19,49 @@ namespace Code.Scripts.Mocks
         {
             InitializePlayerUnits();
             InitializeSpotUnits();
+            InitializeSpot2Units();
         }
+        
+        [SerializeField] private int _spotCount;
 
         private void InitializeSpotUnits()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < _spotCount; i++)
             {
                 Vector3 spawnPos = new Vector3(
                     Random.Range(0.0f, 10.0f),
                     0.0f,
                     Random.Range(0.0f, 10.0f));
                 
-                GroupHelpers.InstantiateToGroup(level1Unit, spawnPos, spot.Group);
+                GroupHelpers.InstantiateToGroup(spot.Group, level1Unit, spawnPos);
+            }
+        }
+        
+        private void InitializeSpot2Units()
+        {
+            for (int i = 0; i < _spotCount; i++)
+            {
+                Vector3 spawnPos = new Vector3(
+                    Random.Range(0.0f, 10.0f),
+                    0.0f,
+                    Random.Range(0.0f, 10.0f));
+                
+                GroupHelpers.InstantiateToGroup(spot2.Group, level1Unit, spawnPos);
             }
         }
 
+        [SerializeField] private int _playerCount;
+
         private void InitializePlayerUnits()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < _playerCount; i++)
             {
                 Vector3 spawnPos = new Vector3(
                     Random.Range(0.0f, 10.0f),
                     0.0f,
                     Random.Range(0.0f, 10.0f));
                 
-                GroupHelpers.InstantiateToGroup(level1Unit, spawnPos, player.Group);
+                GroupHelpers.InstantiateToGroup(player.Group, level1Unit, spawnPos);
             }
         }
     }

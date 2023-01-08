@@ -11,95 +11,42 @@ namespace Code.Scripts.Core
     [Serializable]
     public class Group
     {
-        private Transform _playerTransform;
-        [SerializeField] private Transform _groupTransform;
-        private Action _unitsUpdateCallback;
-
-        [Space] [Header("Group settings")] 
-        [SerializeField] private int _unitsLimit;
-        [SerializeField] private float _unitSpeed;
-        private List<GroupUnit> _units = new();
+        [HideInInspector] public Transform _parentTransform;
+        [SerializeField] public Transform _groupTransform;
+        
         [SerializeField] private FormationService _formationService;
         [SerializeField] private MergeService _mergeService;
+        [SerializeField] private GroupService _groupService;
 
+        public Action OnUpdate;
         public Action OnChange;
-        public float OrbitOffset => _formationService.OrbitOffset;
-        public int OrbitsAmount => _formationService.OrbitsAmount;
 
-        public List<GroupUnit> GetUnits => _units;
+        public FormationService FormationService => _formationService;
+        public MergeService MergeService => _mergeService;
+        public GroupService GroupService => _groupService;
 
-        public void Initialize(Transform playerTransform)
+        public void Initialize(Transform parentTransform)
         {
-            _playerTransform = playerTransform;
-
-            _formationService.Initialize(ref _playerTransform);
+            _parentTransform = parentTransform;
+            
+            _groupService.Initialize(this);
+            _formationService.Initialize(this);
             _mergeService.Initialize(this);
+
+            OnUpdate += Update;
+            OnChange += Update;
         }
 
-        public bool Add(Transform unitTransform, Unit settings)
+        public void Update()
         {
-            if (_units.Count >= _unitsLimit)
-            {
-                GroupHelpers.ReactGroupOverflow(settings);
-                return false;
-            }
-            else
-            {
-                ApplyAddition(unitTransform, settings);
-                return true;
-            }
-        }
-
-        private void ApplyAddition(Transform unitTransform, Unit settings)
-        {
-            var unit = GroupHelpers.ConstructGroupUnit(unitTransform, _unitSpeed, settings);
-            GroupHelpers.AssignGroupUnitToGroup(unit, _groupTransform, ref _unitsUpdateCallback);
-
-            _units.Add(unit);
-
-            Reform();
-        }
-
-        public void Remove(int order)
-        {
-            var unit = _units.FirstOrDefault(x => x.settings.order.Equals(order));
-            
-            if (unit != null)
-            {
-                GroupHelpers.ProvideUnitDestruction(unit, ref _unitsUpdateCallback, _units);
-                Reform();
-            }
-        }
-
-        public void RemoveAt(int at)
-        {
-            var unit = _units[at];
-            
-            if (unit != null)
-            {
-                GroupHelpers.ProvideUnitDestruction(unit, ref _unitsUpdateCallback, _units);
-                Reform();
-            }
-        }
-
-        public void Merge()
-        {
-            _mergeService.Merge(_units);
-            
-            OnChange?.Invoke();
+            _formationService.Form(_groupService.units);
+            _groupService.UnitsUpdateCallback?.Invoke();
         }
         
-        private void Reform()
+        public void Merge()
         {
-            _units = _units.OrderBy(x => x.settings.order).ToList();
-            UpdateGroup();
+            _mergeService.Merge(_groupService.units);
             OnChange?.Invoke();
-        }
-
-        public void UpdateGroup()
-        {
-            _formationService.Form(ref _units);
-            _unitsUpdateCallback?.Invoke();
         }
     }
 }

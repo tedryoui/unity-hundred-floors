@@ -1,4 +1,5 @@
 ﻿using System;
+using Code.Scripts.Services;
 using Code.Scripts.Units;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,13 +9,16 @@ namespace Code.Scripts.Core
 {
     public class Player : MonoBehaviour
     {
-        public enum State {Stay, Move, Battle, Release}
-        
-        [SerializeField] private int _colliderAdditionalRadius;
-        [SerializeField] private Group _group;
-        private SphereCollider _collider;
+        public enum State {Free, Battle, Dead}
         [HideInInspector] public State state;
+        
+        [SerializeField] private Group _group;
+        [SerializeField] private BattleService _battleService;
+        [SerializeField] private InputService _inputService;
+
+        private SphereCollider _collider;
         public Group Group => _group;
+        public BattleService BattleService => _battleService;
 
         private void Awake()
         {
@@ -22,33 +26,36 @@ namespace Code.Scripts.Core
             
             _group.Initialize(transform);
             _group.OnChange += UpdateCollider;
+            
+            _battleService.Initialize(this);
+            _inputService.Initialize(this);
         }
-
+        
         private void Update()
         {
             switch (state)
             {
-                
+                case State.Dead:
+                    Destroy(transform.parent.gameObject);
+                    return;
+                case State.Battle:
+                    _group.Update();
+                    return;
+                case State.Free:
+                    {
+                        _group.Update();
+                        _inputService.Update();
+                    }
+                    break;
             }
-            
-            TestInput();
-            _group.UpdateGroup();
         }
 
         private void UpdateCollider()
         {
-            var orbitOffset = Group.OrbitOffset;
-            var orbitsAmount = Group.OrbitsAmount + 1;
+            var orbitOffset = Group.FormationService.OrbitOffset;
+            var orbitsAmount = Group.FormationService.OrbitsAmount + 1;
 
-            _collider.radius = orbitOffset * orbitsAmount + _colliderAdditionalRadius;
-        }
-
-        private void TestInput()
-        {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                _group.Merge();
-            }
+            _collider.radius = orbitOffset * orbitsAmount;
         }
     }
 }

@@ -12,6 +12,29 @@ namespace Code.Scripts.Units
         public Unit settings;
         public float speed;
         public State state = State.Chase;
+
+        private CapsuleCollider _collider;
+        private Rigidbody _rb;
+
+        public Rigidbody GetRb
+        {
+            get
+            {
+                if (ReferenceEquals(_rb, null)) _rb = objectTransform.GetComponent<Rigidbody>();
+
+                return _rb;
+            }
+        }
+
+        public CapsuleCollider GetCollider
+        {
+            get
+            {
+                if (ReferenceEquals(_collider, null)) _collider = objectTransform.GetComponent<CapsuleCollider>();
+
+                return _collider;
+            }
+        }
         
         //
         // Chase settings
@@ -45,9 +68,15 @@ namespace Code.Scripts.Units
 
         private void Battle()
         {
+            if (_battleTargetTransform == null)
+            {
+                state = State.Chase;
+                return;
+            }
+            
             var dist = Vector3.Distance(objectTransform.position, _battleTargetTransform.position);
             var triggerRadius = settings.triggerRadius + _battleTriggerRadius;
-
+            
             if (dist > triggerRadius)
                 ChaseUnit();
             else
@@ -61,24 +90,23 @@ namespace Code.Scripts.Units
 
         private void Attack()
         {
-            Debug.Log("Attacking!");
+            GetRb.velocity = Vector3.zero;
         }
 
         private void Chase(Vector3 targetPosition)
         {
             var position = objectTransform.position;
             var additionalSpeed = Vector3.Distance(position, targetPosition);
-            var smoothSpeed = additionalSpeed + speed;
+            var smoothSpeed = additionalSpeed * speed;
 
-            var movePosition = 
-                Vector3.MoveTowards(position, targetPosition, smoothSpeed * Time.deltaTime);
-            objectTransform.position = movePosition;
+            GetRb.velocity = (targetPosition - position) * smoothSpeed;
         }
 
         public void SetBattleState(Transform unitObjectTransform, float triggerRadius)
         {
             _battleTargetTransform = unitObjectTransform;
             _battleTriggerRadius = triggerRadius;
+            GetCollider.isTrigger = false;
             state = State.Battle;
         }
 
@@ -86,6 +114,7 @@ namespace Code.Scripts.Units
         {
             _battleTargetTransform = null;
             _battleTriggerRadius = 0.0f;
+            GetCollider.isTrigger = true;
             state = State.Chase;
         }
     }

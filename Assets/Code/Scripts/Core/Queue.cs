@@ -83,7 +83,7 @@ namespace Code.Scripts.Core
         public void SetFirstUnit()
         {
             _player.gameObject.SetActive(true);
-            _player.Group.Add(Head.Transform, _unitPrefab);
+            _player.Group.GroupService.Add(Head.Transform, _unitPrefab);
             
             RemoveHead();
         }

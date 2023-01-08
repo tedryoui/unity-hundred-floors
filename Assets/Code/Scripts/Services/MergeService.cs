@@ -50,26 +50,24 @@ namespace Code.Scripts.Services
 
         private void MergeTwo(List<GroupUnit> units, Unit identifier, int leftIterator, Unit nextLevel)
         {
-            Vector3 spawnPos = GetSpawnPosition(units, leftIterator);
+            Vector3 spawnPos = units[leftIterator].TargetPosition;
 
             if (ReferenceEquals(nextLevel, null))
             {
-                GroupHelpers.ReactUnitOvergrade(identifier, units.Count);
+                ReactToOverGrade(identifier, units.Count);
             }
             else
             {
-                GroupHelpers.InstantiateToGroup(nextLevel, spawnPos, _group);
+                GroupHelpers.InstantiateToGroup(_group, nextLevel, spawnPos);
             }
                 
-            _group.Remove(identifier.order);
-            _group.Remove(identifier.order);
+            _group.GroupService.Remove(identifier.points);
+            _group.GroupService.Remove(identifier.points);
         }
 
-        private static Vector3 GetSpawnPosition(List<GroupUnit> units, int fId)
+        private void ReactToOverGrade(Unit identifier, int unitsCount)
         {
-            var lPos = units[fId];
-
-            return lPos.TargetPosition;
+            
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Code.Scripts.Services
                 var unitLevel = units[i];
                 var unitObject = cachedObjects[i];
                 
-                bool result = player.Group.Add(unitObject.transform, unitLevel);
+                bool result = player.Group.GroupService.Add(unitObject.transform, unitLevel);
 
                 if (!result)
                     Object.Destroy(unitObject);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
 
@@ -9,26 +10,25 @@ namespace Code.Scripts.Services
     [Serializable]
     public class FormationService
     {
-        private Transform _playerTransform;
-
+        private Group _group;
+        
         [Header("Formation settings")] 
         [SerializeField] private int _baseOrbitUnitAmount;
         [SerializeField] private int _orbitUnitIncreaseAmount;
-        [SerializeField] private float _orbitOffset;
         [Range(0, 360)] 
         [SerializeField] private int _orbitAngleOffset;
+        [SerializeField] private float _orbitOffset;
 
-        private List<GroupUnit> _cachedUnits;
-
+        private List<GroupUnit> _cachedUnits = new List<GroupUnit>();
         public int OrbitsAmount => Mathf.CeilToInt((_cachedUnits.Count - 1.0f) / _baseOrbitUnitAmount);
         public float OrbitOffset => _orbitOffset;
-
-        public void Initialize(ref Transform playerTransform)
+        
+        public void Initialize(Group group)
         {
-            _playerTransform = playerTransform;
+            _group = group;
         }
 
-        public void Form(ref List<GroupUnit> units)
+        public void Form(List<GroupUnit> units)
         {
             _cachedUnits = units;
             if (_cachedUnits.Count.Equals(0)) return;
@@ -63,7 +63,7 @@ namespace Code.Scripts.Services
 
         private void PlaceCenterUnit()
         {
-            var centerPosition = _playerTransform.position;
+            var centerPosition = _group._parentTransform.position;
 
             var unit = _cachedUnits[0];
             unit.TargetPosition = centerPosition;
@@ -82,7 +82,7 @@ namespace Code.Scripts.Services
         private Vector3 ComputeUnitPosition(float orbitUnitsAmount, int orbitNumber, int unitIndex)
         {
             var angleIncrement = 360.0f / orbitUnitsAmount;
-            var basePosition = _playerTransform.position;
+            var basePosition = _group._parentTransform.position;
             var degreesOffset = orbitNumber * _orbitAngleOffset;
             var angle = Mathf.Deg2Rad * (angleIncrement * unitIndex + degreesOffset);
 

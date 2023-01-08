@@ -10,7 +10,7 @@ namespace Code.Scripts.Core
 {
     public class Spot : MonoBehaviour
     {
-        public enum State {Wait, Stay, Battle, Move, Dead}
+        public enum State {Free, Stay, Battle, Move, Dead}
         
         [SerializeField] private LayerMask _playerMask;
         [SerializeField] private Group _group;
@@ -33,27 +33,29 @@ namespace Code.Scripts.Core
             switch (state)
             {
                 case State.Dead:
-                    Destroy(gameObject);
+                    Destroy(transform.parent.gameObject);
                     break;
-                case State.Wait:
+                case State.Free:
                     WaitForBattle();
+                    _group.Update();
+                    break;
+                case State.Battle:
+                    _group.Update();
                     break;
             }
-            
-            _group.UpdateGroup();
         }
 
         private void WaitForBattle()
         {
-            Collider[] _playerCollider = new Collider[1];
-            float radius = _group.OrbitsAmount * _group.OrbitOffset;
+            Collider[] playerCollider = new Collider[1];
+            float radius = _group.FormationService.OrbitsAmount * _group.FormationService.OrbitOffset;
 
-            var size = Physics.OverlapSphereNonAlloc(transform.position, radius, _playerCollider, _playerMask);
+            var size = Physics.OverlapSphereNonAlloc(transform.position, radius, playerCollider, _playerMask);
 
             if (size == 1)
             {
-                var player = _playerCollider[0].GetComponent<Player>();
-                StartCoroutine(BattleService.StartBattle(player, this));
+                var player = playerCollider[0].GetComponent<Player>();
+                player.BattleService.InvokeBattle(this);
             }
         }
 
