@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Code.Scripts.Services
+namespace Code.Scripts.Helpers
 {
     public class GroupHelpers
     {

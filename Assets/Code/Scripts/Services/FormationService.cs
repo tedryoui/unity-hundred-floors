@@ -64,7 +64,6 @@ namespace Code.Scripts.Services
         private void PlaceCenterUnit()
         {
             var centerPosition = _group._parentTransform.position;
-
             var unit = _cachedUnits[0];
             unit.TargetPosition = centerPosition;
         }
@@ -72,7 +71,6 @@ namespace Code.Scripts.Services
         private int ComputeUnitsBeforeOrbit(int layerNumber)
         {
             var amount = 1;
-
             for (var i = 0; i < layerNumber; i++)
                 amount += _baseOrbitUnitAmount + i * 4;
 

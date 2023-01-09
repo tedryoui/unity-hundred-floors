@@ -10,13 +10,18 @@ namespace Code.Scripts.Services
     [Serializable]
     public class ReleaseService
     {
+        private Cell _cell;
+        
         [SerializeField] private LayerMask _playerMask;
+        [SerializeField] private float _overlapRaius;
 
-        [SerializeField] private Vector3 _playerOverlapPosition;
-        [SerializeField] private float _playerOverlapRadius;
+        public bool isReleasable = false;
 
-        [HideInInspector] public bool isReleasable = false;
-
+        public void Initialize(Cell cell)
+        {
+            _cell = cell;
+        }
+        
         public bool Release(ref Player player, ref List<GameObject> cachedObjects, ref List<Unit> units)
         {
             bool isPlayerTriggered = IsPlayerTriggering();
@@ -49,7 +54,7 @@ namespace Code.Scripts.Services
         private bool IsPlayerTriggering()
         {
             Collider[] playerCollider = new Collider[1];
-            int amount = Physics.OverlapSphereNonAlloc(_playerOverlapPosition, _playerOverlapRadius, playerCollider,
+            int amount = Physics.OverlapSphereNonAlloc(_cell.transform.position, _overlapRaius, playerCollider,
                 _playerMask);
 
             return amount == 1;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0168b3cda9840d19bea5f9b08ca7e86, type: 3}
   m_Name: Level 2
   m_EditorClassIdentifier: 
-  nextLevel: {fileID: 11400000, guid: 61c3f3991015805469e549148b490885, type: 2}
+  next: {fileID: 11400000, guid: 61c3f3991015805469e549148b490885, type: 2}
   prefab: {fileID: 3047663177923544408, guid: 2f97bb42c1829c143a65c5fc643b8305, type: 3}
   points: 2
   triggerRadius: 1.5

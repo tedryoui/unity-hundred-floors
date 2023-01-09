@@ -36,7 +36,6 @@ namespace Code.Scripts.Core
             switch (state)
             {
                 case State.Dead:
-                    Destroy(transform.parent.gameObject);
                     return;
                 case State.Battle:
                     _group.Update();
@@ -56,6 +55,11 @@ namespace Code.Scripts.Core
             var orbitsAmount = Group.FormationService.OrbitsAmount + 1;
 
             _collider.radius = orbitOffset * orbitsAmount;
+        }
+
+        public void Kill()
+        {
+            Destroy(transform.parent.gameObject);
         }
     }
 }

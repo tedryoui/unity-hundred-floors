@@ -33,8 +33,7 @@ namespace Code.Scripts.Core
             switch (state)
             {
                 case State.Dead:
-                    Destroy(transform.parent.gameObject);
-                    break;
+                    return;
                 case State.Free:
                     WaitForBattle();
                     _group.Update();
@@ -59,8 +58,9 @@ namespace Code.Scripts.Core
             }
         }
 
-        private void OnDestroy()
+        public void Kill()
         {
+            Destroy(transform.parent.gameObject);
             onSpotDead?.Invoke();
         }
     }

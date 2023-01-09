@@ -10,7 +10,7 @@ namespace Code.Scripts.Core
     public class Cell : MonoBehaviour
     {
         [SerializeField] private Player _player;
-        [SerializeField] private Transform _unitsTransform;
+        [SerializeField] private Transform _groupTransform;
         
         [SerializeField] private List<Unit> _cellUnits;
         private List<GameObject> _cachedUnits;
@@ -20,6 +20,7 @@ namespace Code.Scripts.Core
         private void Awake()
         {
             CacheUnits();
+            _releaseService.Initialize(this);
         }
 
         private void Update()
@@ -48,7 +49,7 @@ namespace Code.Scripts.Core
             
             foreach (var ceilUnit in _cellUnits)
             {
-                GameObject unit = Instantiate(ceilUnit.prefab, transform.position, Quaternion.identity, _unitsTransform);
+                GameObject unit = Instantiate(ceilUnit.prefab, transform.position, Quaternion.identity, _groupTransform);
                 _cachedUnits.Add(unit);
             }
         }

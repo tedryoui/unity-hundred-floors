@@ -63,7 +63,7 @@ namespace Code.Scripts.Core
 
         public void MoveTheQueueHead()
         {
-            _units[0].Placement = Vector3.zero;
+            _units[0].Placement = _player.transform.position;
             _units[0].Speed = _unitSpeed * 2.0f;
             _units[0].Status = QueueUnit.QueueUnitStatus.Move;
         }

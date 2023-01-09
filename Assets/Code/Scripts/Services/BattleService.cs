@@ -14,8 +14,6 @@ namespace Code.Scripts.Services
     public class BattleService
     {
         private Player _player;
-        
-        private bool _isBattleCompleted;
         private Spot _spot;
         private GameObject particle;
         
@@ -32,36 +30,113 @@ namespace Code.Scripts.Services
 
         public void InvokeBattle(Spot spot)
         {
-            _isBattleCompleted = false;
             _spot = spot;
-
             _player.StartCoroutine(StartBattle());
         }
         
         private IEnumerator StartBattle()
         {
-            SetBattleMode();
-
+            FocusBattle();
             MatchUnits();
-
             AddParticles();
 
-            Coroutine battleProcessor = _player.StartCoroutine(ProcessBattle());
-            yield return new WaitWhile(() => !_isBattleCompleted);
+            yield return _player.StartCoroutine(ProcessBattle());
             
             MismatchUnits();
-
             RemoveParticles();
-            
-            RemoveBattleMode();
+            UnfocusBattle();
         }
 
-        private void RemoveParticles()
+        private IEnumerator ProcessBattle()
         {
-            var particleSystem = particle.GetComponent<ParticleSystem>();
-            particleSystem.Stop();
+            bool isSpotWins = GetSpotPoints > GetPlayerPoints;
+            
+            yield return _player.StartCoroutine(ProcessLogics());
+            
+            if (isSpotWins)
+                _player.Kill();
+            else
+                _spot.Kill();
         }
 
+        private IEnumerator ProcessLogics()
+        {
+            // Getting target points for the player, to know point where we need to stop disposing units
+            var targetPoints = GetPlayerPoints - GetSpotPoints;
+
+            // Disposing player unit while player group points after changes doesn`t touch target points AND
+            // while player have any unit in his group
+            while (GetPlayerUnits.Count != 0 && 
+                   GetPlayerPoints - GetPlayerUnits[^1].settings.points >= targetPoints)
+            {
+                // Removing last (the lowest by points) unit in player`s and spot`s groups
+                if(GetSpotUnits.Count != 0)
+                    _spot.Group.GroupService.Remove(GetSpotUnits[^1].settings.points);
+                _player.Group.GroupService.Remove(GetPlayerUnits[^1].settings.points);
+
+                // Waiting for some time, to make "realtime" battle
+                yield return new WaitForSeconds(0.75f);
+            }
+        }
+        
+        private void MatchUnits()
+        {
+            var attackers = ShuffleUnits(GetPlayerUnits);
+            var defenders = ShuffleUnits(GetSpotUnits);
+
+            if (attackers.Count < defenders.Count)
+                SwapLists(attackers, defenders);
+
+            PerformMatching(attackers, defenders);
+        }
+
+        private void PerformMatching(List<GroupUnit> attackers, List<GroupUnit> defenders)
+        {
+            for (int i = 0; i < attackers.Count; i++)
+            {
+                var spotUnitIndex = i % defenders.Count;
+                var spotUnit = defenders[spotUnitIndex];
+                var playerUnit = attackers[i];
+
+                playerUnit.SetBattleState(spotUnit.objectTransform, spotUnit.settings.triggerRadius);
+                spotUnit.SetBattleState(playerUnit.objectTransform, playerUnit.settings.triggerRadius);
+            }
+        }
+
+        private void MismatchUnits()
+        {
+            var playerUnits = GetPlayerUnits;
+            var spotUnits = GetSpotUnits;
+            
+            if(!ReferenceEquals(_player, null))
+                foreach (var playerUnit in playerUnits)
+                    playerUnit.RemoveBattleState();
+            
+            if(!ReferenceEquals(_spot, null))
+                foreach (var groupUnit in spotUnits)
+                    groupUnit.RemoveBattleState();
+        }
+
+        private List<GroupUnit> ShuffleUnits(List<GroupUnit> units)
+        {
+            var random = new Random();
+            var randomized = units.OrderBy(item => random.Next());
+
+            return randomized.ToList();
+        }
+
+        private void SwapLists(List<GroupUnit> first, List<GroupUnit> second)
+        {
+            List<GroupUnit> temp = new List<GroupUnit>();
+            temp.AddRange(first);
+                
+            first.Clear();
+            first.AddRange(second);
+                
+            second.Clear();
+            second.AddRange(temp);
+        }
+        
         private void AddParticles()
         {
             var position = _player.transform.position + (_spot.transform.position - _player.transform.position) / 2;
@@ -73,99 +148,23 @@ namespace Code.Scripts.Services
 
             particle = smoke;
         }
-
-        private IEnumerator ProcessBattle()
+        
+        private void RemoveParticles()
         {
-            yield return _player.StartCoroutine(StartDisposing());
-            
-            if (GetSpotPoints > GetPlayerPoints)
-                _player.state = Player.State.Dead;
-            else
-                _spot.state = Spot.State.Dead;
-
-            _isBattleCompleted = true;
+            var particleSystem = particle.GetComponent<ParticleSystem>();
+            particleSystem.Stop();
         }
-
-        private IEnumerator StartDisposing()
-        {
-            var targetPoints = GetPlayerPoints - GetSpotPoints;
-
-            while (GetPlayerPoints >= targetPoints)
-            {
-                if (GetPlayerUnits.Count == 0) break;
-                
-                var playerUnit = GetPlayerUnits[^1];
-                if (GetPlayerPoints - playerUnit.settings.points < targetPoints) break;
-                
-                var spotUnit = GetSpotUnits[^1];
-                
-                _player.Group.GroupService.Remove(playerUnit.settings.points);
-                _spot.Group.GroupService.Remove(spotUnit.settings.points);
-
-                yield return new WaitForSeconds(0.75f);
-            }
-        }
-
-        private void MismatchUnits()
-        {
-            var playerUnits = GetPlayerUnits;
-            var spotUnits = GetSpotUnits;
-            
-            if(ReferenceEquals(_player, null))
-                foreach (var playerUnit in playerUnits)
-                    playerUnit.RemoveBattleState();
-            
-            if(ReferenceEquals(_spot, null))
-                foreach (var groupUnit in spotUnits)
-                    groupUnit.RemoveBattleState();
-        }
-
-        private void RemoveBattleMode()
+        
+        private void UnfocusBattle()
         {
             _player.state = Player.State.Free;
             _spot.state = Spot.State.Free;
         }
 
-        private void SetBattleMode()
+        private void FocusBattle()
         {
             _player.state = Player.State.Battle;
             _spot.state = Spot.State.Battle;
-        }
-
-        private void MatchUnits()
-        {
-            var attackers = ShuffleUnits(GetPlayerUnits);
-            var defenders = ShuffleUnits(GetSpotUnits);
-
-            if (attackers.Count < defenders.Count)
-            {
-                List<GroupUnit> temp = new List<GroupUnit>();
-                temp.AddRange(defenders);
-                
-                defenders.Clear();
-                defenders.AddRange(attackers);
-                
-                attackers.Clear();
-                attackers.AddRange(temp);
-            }
-
-            for (int i = 0; i < attackers.Count; i++)
-            {
-                var spotUnitIndex = i % defenders.Count;
-                var spotUnit = defenders[spotUnitIndex];
-                var playerUnit = attackers[i];
-                
-                playerUnit.SetBattleState(spotUnit.objectTransform, spotUnit.settings.triggerRadius);
-                spotUnit.SetBattleState(playerUnit.objectTransform, playerUnit.settings.triggerRadius);
-            }
-        }
-
-        private List<GroupUnit> ShuffleUnits(List<GroupUnit> units)
-        {
-            var random = new Random();
-            var randomized = units.OrderBy(item => random.Next());
-
-            return randomized.ToList();
         }
     }
 }
