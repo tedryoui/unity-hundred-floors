@@ -11,7 +11,7 @@ namespace Code.Scripts.Services
     [Serializable]
     public class GroupService
     {
-        private Transform _groupTransform;
+        private Group _group;
         
         [SerializeField] private int _unitsLimit;
         [SerializeField] private float _unitSpeed;
@@ -24,9 +24,8 @@ namespace Code.Scripts.Services
 
         public void Initialize(Group group)
         {
-            _groupTransform = group._groupTransform;
-
-            group.OnChange += Sort;
+            _group = group;
+            _group.OnChange += Sort;
         }
 
         public bool Add(Transform unitTransform, Unit settings)
@@ -39,6 +38,7 @@ namespace Code.Scripts.Services
             else
             {
                 ApplyAddition(unitTransform, settings);
+                _group.OnChange?.Invoke();
                 return true;
             }
         }
@@ -61,7 +61,7 @@ namespace Code.Scripts.Services
                 speed = _unitSpeed
             };
             
-            unit.objectTransform.parent = _groupTransform;
+            unit.objectTransform.parent = _group._groupTransform;
             UnitsUpdateCallback += unit.Update;
             
             return unit;
@@ -80,6 +80,7 @@ namespace Code.Scripts.Services
                 _points -= unit.settings.points;
                 GroupHelpers.ProvideUnitDestruction(unit, ref UnitsUpdateCallback, units);
                 Sort();
+                _group.OnChange?.Invoke();
             }
         }
         

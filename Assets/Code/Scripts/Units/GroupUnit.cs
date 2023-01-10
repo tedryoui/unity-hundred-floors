@@ -96,10 +96,17 @@ namespace Code.Scripts.Units
         private void Chase(Vector3 targetPosition)
         {
             var position = objectTransform.position;
-            var additionalSpeed = Vector3.Distance(position, targetPosition);
-            var smoothSpeed = additionalSpeed * speed;
 
-            GetRb.velocity = (targetPosition - position) * smoothSpeed;
+            var dst = Vector3.Distance(position, targetPosition);
+            if (dst >= 0.5f)
+            {
+                var smoothSpeed = (dst * speed);
+                GetRb.velocity = (targetPosition - position).normalized * smoothSpeed;
+            }
+            else
+            {
+                GetRb.velocity = Vector3.zero;
+            }
         }
 
         public void SetBattleState(Transform unitObjectTransform, float triggerRadius)

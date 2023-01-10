@@ -28,7 +28,7 @@ namespace Code.Scripts.Services
                 Input.GetAxis("Vertical")
             );
 
-            _player.transform.position += moveDir * (10.0f * Time.deltaTime);
+            _player.transform.position += moveDir * (_player.speed * Time.deltaTime);
         }
 
         private void ProcessMergeInput()

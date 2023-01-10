@@ -10,11 +10,15 @@ namespace Code.Scripts.Core
         [SerializeField] private Player _player;
         public static Player GetPlayer => Instance._player;
 
-        public GameObject smoke;
-        
         private void Awake()
         {
             Instance = this;
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void Setup()
+        {
+            Application.targetFrameRate = 60;
         }
     }
 }

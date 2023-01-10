@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cinemachine;
 using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
@@ -13,9 +14,12 @@ namespace Code.Scripts.Services
     [Serializable]
     public class BattleService
     {
+        [SerializeField] private CinemachineVirtualCamera _vCam;
+        [SerializeField] private GameObject _smokePrefab;
+        
         private Player _player;
         private Spot _spot;
-        private GameObject particle;
+        private GameObject _particle;
         
         private int GetPlayerPoints => _player.Group.GroupService.GetPoints;
         private List<GroupUnit> GetPlayerUnits => _player.Group.GroupService.units;
@@ -36,9 +40,9 @@ namespace Code.Scripts.Services
         
         private IEnumerator StartBattle()
         {
+            AddParticles();
             FocusBattle();
             MatchUnits();
-            AddParticles();
 
             yield return _player.StartCoroutine(ProcessBattle());
             
@@ -141,17 +145,16 @@ namespace Code.Scripts.Services
         {
             var position = _player.transform.position + (_spot.transform.position - _player.transform.position) / 2;
             var rotation = Quaternion.Euler(-90, 0, 0);
-            var prefab = GameCore.Instance.smoke;
             
-            GameObject smoke = GameObject.Instantiate(prefab, position, rotation);
+            GameObject smoke = GameObject.Instantiate(_smokePrefab, position, rotation);
             smoke.SetActive(true);
 
-            particle = smoke;
+            _particle = smoke;
         }
         
         private void RemoveParticles()
         {
-            var particleSystem = particle.GetComponent<ParticleSystem>();
+            var particleSystem = _particle.GetComponent<ParticleSystem>();
             particleSystem.Stop();
         }
         
@@ -159,12 +162,20 @@ namespace Code.Scripts.Services
         {
             _player.state = Player.State.Free;
             _spot.state = Spot.State.Free;
+            
+            _vCam.Priority = 0;
         }
 
         private void FocusBattle()
         {
             _player.state = Player.State.Battle;
             _spot.state = Spot.State.Battle;
+
+            _vCam.Priority = 100;
+            _vCam.Follow = _particle.transform;
+            _vCam.LookAt = _particle.transform;
+            CinemachineTransposer transposer = _vCam.GetCinemachineComponent<CinemachineTransposer>();
+            transposer.m_FollowOffset = new Vector3(0, 20, -10);
         }
     }
 }

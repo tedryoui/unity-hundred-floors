@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using Code.Scripts.Core;
 using Code.Scripts.Units;
 using UnityEngine;
@@ -9,20 +10,25 @@ using Queue = Code.Scripts.Core.Queue;
 
 namespace Code.Scripts.Cutscenes
 {
-    public class QueueGettingCutscene : MonoBehaviour
+    public class QueueCutscene : MonoBehaviour
     {
         [SerializeField] private Player _player;
         [SerializeField] private Queue _queue;
-        [SerializeField] private Camera _followCamera;
+        [SerializeField] private CinemachineVirtualCamera _vCam;
         [SerializeField] private float _delayBeforeDestroy;
         [SerializeField] private UnityEvent _onCutsceneCloseEvent;
-        private Camera _mainCamera;
 
         private void Start()
         {
             CatchPlayer();
+            SetupCamera();
             
             StartCutscene();
+        }
+
+        private void SetupCamera()
+        {
+            _vCam.LookAt = _queue.Head.Transform;
         }
 
         private void StartCutscene()
@@ -34,26 +40,27 @@ namespace Code.Scripts.Cutscenes
 
         private IEnumerator FollowQueueHead()
         {
-            Camera.SetupCurrent(_followCamera);
-            _followCamera.targetDisplay = 0;
+            _vCam.Priority = 100;
             
             yield return new WaitWhile(() => _queue.Head.Status.Equals(QueueUnit.QueueUnitStatus.Move));
-            Camera.SetupCurrent(_mainCamera);
             yield return new WaitForSeconds(_delayBeforeDestroy);
             
             CloseCutscene();
         }
 
-        private void CatchPlayer()
-        {
-            _mainCamera = Camera.main;
-            _player.gameObject.SetActive(false);
-        }
+        private void CatchPlayer() => _player.gameObject.SetActive(false);
 
         private void CloseCutscene()
         {
+            _vCam.Priority = 0;
             _onCutsceneCloseEvent?.Invoke();
 
+            StartCoroutine(DestroyOnCameraChanged());
+        }
+
+        private IEnumerator DestroyOnCameraChanged()
+        {
+            yield return new WaitForSecondsRealtime(10.0f);
             Destroy(gameObject);
         }
     }

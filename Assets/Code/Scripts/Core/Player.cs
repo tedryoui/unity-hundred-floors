@@ -1,4 +1,5 @@
 ﻿using System;
+using Cinemachine;
 using Code.Scripts.Services;
 using Code.Scripts.Units;
 using UnityEngine;
@@ -11,15 +12,18 @@ namespace Code.Scripts.Core
     {
         public enum State {Free, Battle, Dead}
         [HideInInspector] public State state;
+        public float speed;
         
         [SerializeField] private Group _group;
         [SerializeField] private BattleService _battleService;
         [SerializeField] private InputService _inputService;
+        [SerializeField] private PlayerCameraService _cameraService;
 
         private SphereCollider _collider;
+        
         public Group Group => _group;
         public BattleService BattleService => _battleService;
-
+        
         private void Awake()
         {
             _collider = GetComponent<SphereCollider>();
@@ -29,6 +33,7 @@ namespace Code.Scripts.Core
             
             _battleService.Initialize(this);
             _inputService.Initialize(this);
+            _cameraService.Initialize(this);
         }
         
         private void Update()
@@ -47,6 +52,8 @@ namespace Code.Scripts.Core
                     }
                     break;
             }
+            
+            _cameraService.Update();
         }
 
         private void UpdateCollider()
