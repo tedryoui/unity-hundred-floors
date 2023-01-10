@@ -23,7 +23,17 @@ namespace Code.Scripts.Core
         
         public Group Group => _group;
         public BattleService BattleService => _battleService;
-        
+
+        private void OnEnable()
+        {
+            _inputService.Controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _inputService.Controls.Disable();
+        }
+
         private void Awake()
         {
             _collider = GetComponent<SphereCollider>();

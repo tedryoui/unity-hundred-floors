@@ -1,0 +1,34 @@
+{
+    "name": "InputControls",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "bf9cb1bc-9ae6-490e-879f-12bc682d4a13",
+            "actions": [
+                {
+                    "name": "Stick",
+                    "type": "Value",
+                    "id": "cd269cdf-c0c4-4847-bbf0-bfba0391e641",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "314f1b0a-4cb8-4c12-ae48-dd3554c21d1c",
+                    "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Stick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

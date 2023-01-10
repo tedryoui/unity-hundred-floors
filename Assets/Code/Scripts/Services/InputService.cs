@@ -8,10 +8,15 @@ namespace Code.Scripts.Services
     public class InputService
     {
         private Player _player;
+        private InputControls _controls;
+
+        public InputControls Controls => _controls;
         
         public void Initialize(Player player)
         {
             _player = player;
+            
+            _controls = new InputControls();
         }
 
         public void Update()
@@ -22,13 +27,10 @@ namespace Code.Scripts.Services
 
         private void ProcessMoveInput()
         {
-            var moveDir = new Vector3(
-                Input.GetAxis("Horizontal"),
-                0.0f,
-                Input.GetAxis("Vertical")
-            );
-
-            _player.transform.position += moveDir * (_player.speed * Time.deltaTime);
+            Vector2 inputDirection = _controls.Player.Stick.ReadValue<Vector2>();
+            Vector3 moveDirection = new Vector3(inputDirection.x, 0.0f, inputDirection.y);
+            
+            _player.transform.position += moveDirection * (_player.speed * Time.deltaTime);
         }
 
         private void ProcessMergeInput()
