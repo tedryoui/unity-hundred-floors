@@ -8,35 +8,33 @@ namespace Code.Scripts.Services
     public class InputService
     {
         private Player _player;
-        private InputControls _controls;
+        
+        private Vector3 _moveDirection;
 
-        public InputControls Controls => _controls;
+        public Vector3 GetMoveDirection
+        {
+            get
+            {
+                return _moveDirection;
+            }
+        }
         
         public void Initialize(Player player)
         {
             _player = player;
-            
-            _controls = new InputControls();
         }
 
         public void Update()
         {
-            ProcessMoveInput();
-            ProcessMergeInput();
+            UpdateMoveDirection();
         }
 
-        private void ProcessMoveInput()
+        private void UpdateMoveDirection()
         {
-            Vector2 inputDirection = _controls.Player.Stick.ReadValue<Vector2>();
-            Vector3 moveDirection = new Vector3(inputDirection.x, 0.0f, inputDirection.y);
-            
-            _player.transform.position += moveDirection * (_player.speed * Time.deltaTime);
-        }
+            Vector2 inputDirection = GameCore.GetGuiHandler.StickViewModel.GetStickDirection();
+            _moveDirection = new Vector3(inputDirection.x, 0.0f, inputDirection.y);
 
-        private void ProcessMergeInput()
-        {
-            if(Input.GetKeyDown(KeyCode.Space))
-                _player.Group.Merge();
+            _player.transform.position += _moveDirection * (_player.speed * Time.deltaTime);
         }
     }
 }

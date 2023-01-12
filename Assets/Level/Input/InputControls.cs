@@ -50,6 +50,54 @@ public partial class @InputControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Stick"",
+            ""id"": ""534f662e-25fe-4c33-b5b6-3b1e46c590be"",
+            ""actions"": [
+                {
+                    ""name"": ""Direction"",
+                    ""type"": ""Value"",
+                    ""id"": ""afe1ecfc-68f8-47c3-a5ce-ad7b5f69193a"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Position"",
+                    ""type"": ""Value"",
+                    ""id"": ""a561238e-c671-4626-9edb-60375df11e23"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a5f215a4-6ef2-4044-b9e0-64554b326e5b"",
+                    ""path"": ""<Joystick>/stick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d83c96d-eab5-4559-9960-61ccbc3e9729"",
+                    ""path"": ""<Touchscreen>/primaryTouch/startPosition"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Position"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -57,6 +105,10 @@ public partial class @InputControls : IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Stick = m_Player.FindAction("Stick", throwIfNotFound: true);
+        // Stick
+        m_Stick = asset.FindActionMap("Stick", throwIfNotFound: true);
+        m_Stick_Direction = m_Stick.FindAction("Direction", throwIfNotFound: true);
+        m_Stick_Position = m_Stick.FindAction("Position", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -145,8 +197,54 @@ public partial class @InputControls : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Stick
+    private readonly InputActionMap m_Stick;
+    private IStickActions m_StickActionsCallbackInterface;
+    private readonly InputAction m_Stick_Direction;
+    private readonly InputAction m_Stick_Position;
+    public struct StickActions
+    {
+        private @InputControls m_Wrapper;
+        public StickActions(@InputControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Direction => m_Wrapper.m_Stick_Direction;
+        public InputAction @Position => m_Wrapper.m_Stick_Position;
+        public InputActionMap Get() { return m_Wrapper.m_Stick; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(StickActions set) { return set.Get(); }
+        public void SetCallbacks(IStickActions instance)
+        {
+            if (m_Wrapper.m_StickActionsCallbackInterface != null)
+            {
+                @Direction.started -= m_Wrapper.m_StickActionsCallbackInterface.OnDirection;
+                @Direction.performed -= m_Wrapper.m_StickActionsCallbackInterface.OnDirection;
+                @Direction.canceled -= m_Wrapper.m_StickActionsCallbackInterface.OnDirection;
+                @Position.started -= m_Wrapper.m_StickActionsCallbackInterface.OnPosition;
+                @Position.performed -= m_Wrapper.m_StickActionsCallbackInterface.OnPosition;
+                @Position.canceled -= m_Wrapper.m_StickActionsCallbackInterface.OnPosition;
+            }
+            m_Wrapper.m_StickActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Direction.started += instance.OnDirection;
+                @Direction.performed += instance.OnDirection;
+                @Direction.canceled += instance.OnDirection;
+                @Position.started += instance.OnPosition;
+                @Position.performed += instance.OnPosition;
+                @Position.canceled += instance.OnPosition;
+            }
+        }
+    }
+    public StickActions @Stick => new StickActions(this);
     public interface IPlayerActions
     {
         void OnStick(InputAction.CallbackContext context);
+    }
+    public interface IStickActions
+    {
+        void OnDirection(InputAction.CallbackContext context);
+        void OnPosition(InputAction.CallbackContext context);
     }
 }

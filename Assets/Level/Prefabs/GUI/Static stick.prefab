@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2041327070362126310}
   m_Layer: 5
-  m_Name: Stick Fixed
+  m_Name: Static stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

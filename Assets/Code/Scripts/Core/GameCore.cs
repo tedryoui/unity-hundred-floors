@@ -1,18 +1,35 @@
 ﻿using System;
+using Code.Scripts.Services;
 using UnityEngine;
 
 namespace Code.Scripts.Core
 {
     public class GameCore : MonoBehaviour
     {
-        public static GameCore Instance;
+        public static GameCore s_Core;
 
         [SerializeField] private Player _player;
-        public static Player GetPlayer => Instance._player;
+        [SerializeField] private GuiHandler _guiHandler;
+        [SerializeField] private InputControls _controls;
+        public static Player GetPlayer => s_Core._player;
+        public static GuiHandler GetGuiHandler => s_Core._guiHandler;
+        public static InputControls GetInput => s_Core._controls;
+
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
 
         private void Awake()
         {
-            Instance = this;
+            _controls = new InputControls();
+            
+            s_Core = this;
         }
 
         [RuntimeInitializeOnLoadMethod]

@@ -28,6 +28,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Stick",
+            "id": "534f662e-25fe-4c33-b5b6-3b1e46c590be",
+            "actions": [
+                {
+                    "name": "Direction",
+                    "type": "Value",
+                    "id": "afe1ecfc-68f8-47c3-a5ce-ad7b5f69193a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Position",
+                    "type": "Value",
+                    "id": "a561238e-c671-4626-9edb-60375df11e23",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a5f215a4-6ef2-4044-b9e0-64554b326e5b",
+                    "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0d83c96d-eab5-4559-9960-61ccbc3e9729",
+                    "path": "<Touchscreen>/primaryTouch/startPosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
