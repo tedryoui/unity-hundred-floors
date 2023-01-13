@@ -13,7 +13,7 @@ namespace Code.Scripts.Units
         public float speed;
         public State state = State.Chase;
 
-        private CapsuleCollider _collider;
+        private BoxCollider _collider;
         private Rigidbody _rb;
 
         public Rigidbody GetRb
@@ -26,11 +26,11 @@ namespace Code.Scripts.Units
             }
         }
 
-        public CapsuleCollider GetCollider
+        public BoxCollider GetCollider
         {
             get
             {
-                if (ReferenceEquals(_collider, null)) _collider = objectTransform.GetComponent<CapsuleCollider>();
+                if (ReferenceEquals(_collider, null)) _collider = objectTransform.GetComponent<BoxCollider>();
 
                 return _collider;
             }

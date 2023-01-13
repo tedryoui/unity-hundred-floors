@@ -33,6 +33,8 @@ namespace Code.Scripts.Services
         {
             Vector2 inputDirection = GameCore.GetGuiHandler.StickViewModel.GetStickDirection();
             _moveDirection = new Vector3(inputDirection.x, 0.0f, inputDirection.y);
+            
+            Debug.Log(_moveDirection);
 
             _player.transform.position += _moveDirection * (_player.speed * Time.deltaTime);
         }

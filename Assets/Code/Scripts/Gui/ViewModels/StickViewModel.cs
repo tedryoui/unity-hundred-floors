@@ -17,7 +17,7 @@ namespace Code.Scripts.Gui.ViewModels
         
         [SerializeField] private StickView _view;
 
-        private ActivatedStick _stick = ActivatedStick.Static;
+        private ActivatedStick _stick = ActivatedStick.Dynamic;
         private InputControls _controls => GameCore.GetInput;
         
         public void ActivateStaticStick()

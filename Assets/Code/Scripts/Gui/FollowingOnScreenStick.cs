@@ -14,7 +14,7 @@ namespace Code.Scripts.Gui
     {
         private void CorrectPosition(Vector2 delta)
         {
-            if (delta.magnitude / 100.0f >= 0.90f)
+            if (delta.magnitude / movementRange >= 0.90f)
             {
                 var moveVector = Vector2.MoveTowards(m_PointerDownPos, m_PointerDownPos + delta, delta.magnitude / m_FollowSpeed);
                 m_PointerDownPos = moveVector;
@@ -45,11 +45,12 @@ namespace Code.Scripts.Gui
 
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.GetComponentInParent<RectTransform>(), m_CachedEventData.position, m_CachedEventData.pressEventCamera, out var position);
                 var delta = position - m_PointerDownPos;
-                delta = Vector2.ClampMagnitude(delta, movementRange);
                 
+                CorrectPosition(delta);
+
+                delta = Vector2.ClampMagnitude(delta, movementRange);
                 m_StickRoot.position = m_PointerDownPos + delta;
                 m_StickBackground.position = m_PointerDownPos;
-                CorrectPosition(delta);
 
                 var newPos = new Vector2(delta.x / movementRange, delta.y / movementRange);
                 SendValueToControl(newPos);
