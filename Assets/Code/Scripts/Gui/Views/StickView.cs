@@ -10,7 +10,7 @@ namespace Code.Scripts.Gui.Views
         [FormerlySerializedAs("movableStick")] 
         public GameObject movableStickRoot;
         
-        public MovableOnScreenStick movableStick;
+        public FollowingOnScreenStick movableStick;
         
         public GameObject staticStick;
 

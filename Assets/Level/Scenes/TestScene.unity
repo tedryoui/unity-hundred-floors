@@ -4436,6 +4436,7 @@ MonoBehaviour:
   m_StickRoot: {fileID: 1211523670}
   m_StickBackground: {fileID: 1035232672}
   m_MovementRange: 100
+  m_FollowSpeed: 5
   m_ControlPath: <Joystick>/stick
 --- !u!114 &7375056038722586246
 MonoBehaviour:
