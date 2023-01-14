@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Code.Scripts.Gui.Views
 {
-    public class StickView : MonoBehaviour, IPointerDownHandler
+    public class StickView : MonoBehaviour
     {
         [FormerlySerializedAs("movableStick")] 
         public GameObject movableStickRoot;
@@ -14,10 +14,5 @@ namespace Code.Scripts.Gui.Views
         
         public GameObject staticStick;
 
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            Debug.Log("Here 2");
-        }
     }
 }

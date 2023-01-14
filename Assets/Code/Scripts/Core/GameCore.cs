@@ -30,6 +30,8 @@ namespace Code.Scripts.Core
             _controls = new InputControls();
             
             s_Core = this;
+            
+            _guiHandler.PauseGame();
         }
 
         [RuntimeInitializeOnLoadMethod]
