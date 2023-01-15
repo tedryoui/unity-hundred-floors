@@ -17,14 +17,14 @@ namespace Code.Scripts.Core
         [SerializeField] private Transform _unitsGroup;
         
         [Space]
-        [Header("Queue settings")]
+        [Header("Queue unit")]
         [SerializeField] private Transform _queueStartPosition;
         [SerializeField] private Vector3 _queueDirection;
         [SerializeField] private float _unitToUnitOffset;
         [SerializeField] private int _unitsAmount;
         [SerializeField] private float _delayBetweenOffsets;
 
-        [Space] [Header("Queue units settings")] 
+        [Space] [Header("Queue units unit")] 
         [SerializeField] private Unit _unitPrefab;
         [SerializeField] private List<AnimationCurve> _speedInterpolations;
         [SerializeField] private float _unitSpeed;
@@ -41,7 +41,8 @@ namespace Code.Scripts.Core
             {
                 Vector3 pos = _queueStartPosition.position + _queueDirection * i * _unitToUnitOffset;
                 GameObject obj = GameObject.Instantiate(_unitPrefab.prefab, pos, Quaternion.identity, _unitsGroup);
-
+                obj.transform.LookAt(pos + _queueDirection);
+                
                 QueueUnit unit = new QueueUnit()
                 {
                     Transform = obj.transform,

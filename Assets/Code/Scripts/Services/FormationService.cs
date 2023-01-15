@@ -12,7 +12,7 @@ namespace Code.Scripts.Services
     {
         private Group _group;
         
-        [Header("Formation settings")] 
+        [Header("Formation unit")] 
         [SerializeField] private int _baseOrbitUnitAmount;
         [SerializeField] private int _orbitUnitIncreaseAmount;
         [Range(0, 360)] 

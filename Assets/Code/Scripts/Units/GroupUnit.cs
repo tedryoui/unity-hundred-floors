@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Code.Scripts.Units
 {
@@ -9,42 +10,18 @@ namespace Code.Scripts.Units
         public enum State { Stay, Chase, Battle }
         
         public Transform objectTransform;
-        public Unit settings;
-        public float speed;
+        public Unit unit;
         public State state = State.Chase;
+        private NavMeshAgent _navMeshAgent;
 
-        private BoxCollider _collider;
-        private Rigidbody _rb;
-
-        public Rigidbody GetRb
-        {
-            get
-            {
-                if (ReferenceEquals(_rb, null)) _rb = objectTransform.GetComponent<Rigidbody>();
-
-                return _rb;
-            }
+        public NavMeshAgent GetNavMeshAgent => _navMeshAgent ??= objectTransform.GetComponent<NavMeshAgent>();
+        public float Speed {
+            get => GetNavMeshAgent.speed;
+            set => GetNavMeshAgent.speed = value;
         }
 
-        public BoxCollider GetCollider
-        {
-            get
-            {
-                if (ReferenceEquals(_collider, null)) _collider = objectTransform.GetComponent<BoxCollider>();
-
-                return _collider;
-            }
-        }
-        
-        //
-        // Chase settings
-        //
         private Vector3 _chaseTarget;
-        
-        //
-        // Battle settings
-        //
-        private Transform _battleTargetTransform;
+        private Transform _battleTarget;
         private float _battleTriggerRadius;
 
         public Vector3 TargetPosition
@@ -58,70 +35,37 @@ namespace Code.Scripts.Units
             switch (state)
             {
                 case State.Chase:
-                    Chase(_chaseTarget);
+                    GetNavMeshAgent.SetDestination(TargetPosition);
                     break;
                 case State.Battle:
-                    Battle();
+                    Attack();
                     break;
             }
-        }
-
-        private void Battle()
-        {
-            if (_battleTargetTransform == null)
-            {
-                state = State.Chase;
-                return;
-            }
-            
-            var dist = Vector3.Distance(objectTransform.position, _battleTargetTransform.position);
-            var triggerRadius = settings.triggerRadius + _battleTriggerRadius;
-            
-            if (dist > triggerRadius)
-                ChaseUnit();
-            else
-                Attack();
-        }
-
-        private void ChaseUnit()
-        {
-            Chase(_battleTargetTransform.position);
         }
 
         private void Attack()
         {
-            GetRb.velocity = Vector3.zero;
-        }
-
-        private void Chase(Vector3 targetPosition)
-        {
-            var position = objectTransform.position;
-
-            var dst = Vector3.Distance(position, targetPosition);
-            if (dst >= 0.5f)
+            if (_battleTarget == null)
             {
-                var smoothSpeed = (dst * speed);
-                GetRb.velocity = (targetPosition - position).normalized * smoothSpeed;
+                RemoveBattleState();
             }
             else
             {
-                GetRb.velocity = Vector3.zero;
+                GetNavMeshAgent.SetDestination(_battleTarget.position);
             }
         }
 
         public void SetBattleState(Transform unitObjectTransform, float triggerRadius)
         {
-            _battleTargetTransform = unitObjectTransform;
-            _battleTriggerRadius = triggerRadius;
-            GetCollider.isTrigger = false;
+            _battleTarget = unitObjectTransform;
+            GetNavMeshAgent.stoppingDistance = triggerRadius;
             state = State.Battle;
         }
 
         public void RemoveBattleState()
         {
-            _battleTargetTransform = null;
-            _battleTriggerRadius = 0.0f;
-            GetCollider.isTrigger = true;
+            _battleTarget = null;
+            GetNavMeshAgent.stoppingDistance = 0.0f;
             state = State.Chase;
         }
     }

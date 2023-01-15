@@ -71,12 +71,12 @@ namespace Code.Scripts.Services
             // Disposing player unit while player group points after changes doesn`t touch target points AND
             // while player have any unit in his group
             while (GetPlayerUnits.Count != 0 && 
-                   GetPlayerPoints - GetPlayerUnits[^1].settings.points >= targetPoints)
+                   GetPlayerPoints - GetPlayerUnits[^1].unit.points >= targetPoints)
             {
                 // Removing last (the lowest by points) unit in player`s and spot`s groups
                 if(GetSpotUnits.Count != 0)
-                    _spot.Group.GroupService.Remove(GetSpotUnits[^1].settings.points);
-                _player.Group.GroupService.Remove(GetPlayerUnits[^1].settings.points);
+                    _spot.Group.GroupService.Remove(GetSpotUnits[^1].unit.points);
+                _player.Group.GroupService.Remove(GetPlayerUnits[^1].unit.points);
 
                 // Waiting for some time, to make "realtime" battle
                 yield return new WaitForSeconds(0.75f);
@@ -102,8 +102,8 @@ namespace Code.Scripts.Services
                 var spotUnit = defenders[spotUnitIndex];
                 var playerUnit = attackers[i];
 
-                playerUnit.SetBattleState(spotUnit.objectTransform, spotUnit.settings.triggerRadius);
-                spotUnit.SetBattleState(playerUnit.objectTransform, playerUnit.settings.triggerRadius);
+                playerUnit.SetBattleState(spotUnit.objectTransform, spotUnit.unit.triggerRadius);
+                spotUnit.SetBattleState(playerUnit.objectTransform, playerUnit.unit.triggerRadius);
             }
         }
 

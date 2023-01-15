@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cinemachine;
 using Code.Scripts.Services;
 using Code.Scripts.Units;
@@ -23,13 +24,15 @@ namespace Code.Scripts.Core
         
         public Group Group => _group;
         public BattleService BattleService => _battleService;
+        public float Speed => speed * (Group.FormationService.OrbitsAmount + 1);
 
         private void Awake()
         {
             _collider = GetComponent<SphereCollider>();
             
             _group.Initialize(transform);
-            _group.OnChange += UpdateCollider;
+            _group.OnChange += CorrectCollider;
+            _group.OnChange += CorrectUnitsSpeed;
             
             _battleService.Initialize(this);
             _inputService.Initialize(this);
@@ -56,12 +59,23 @@ namespace Code.Scripts.Core
             _cameraService.Update();
         }
 
-        private void UpdateCollider()
+        private void CorrectCollider()
         {
             var orbitOffset = Group.FormationService.OrbitOffset;
             var orbitsAmount = Group.FormationService.OrbitsAmount + 1;
 
             _collider.radius = orbitOffset * orbitsAmount;
+        }
+
+        private void CorrectUnitsSpeed()
+        {
+            List<GroupUnit> units = _group.GroupService.units;
+            float newSpeed = Speed - Group.GroupService.GetSpeedDecrease;
+
+            foreach (var groupUnit in units)
+            {
+                groupUnit.Speed = newSpeed;
+            }
         }
 
         public void Kill()

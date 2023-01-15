@@ -24,7 +24,7 @@ namespace Code.Scripts.Services
         public void Merge(List<GroupUnit> units)
         {
             var levelGroups = 
-                units.GroupBy(x => x.settings)
+                units.GroupBy(x => x.unit)
                      .Select(x => new {x.Key, GroupUnits = x.ToList<GroupUnit>()})
                      .OrderBy(x => x.Key);
             

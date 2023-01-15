@@ -15,12 +15,14 @@ namespace Code.Scripts.Services
         
         [SerializeField] private int _unitsLimit;
         [SerializeField] private float _unitSpeed;
+        [SerializeField] private float _unitSpeedDecrease;
         private int _points;
 
         public List<GroupUnit> units = new();
         public Action UnitsUpdateCallback;
 
         public int GetPoints => _points;
+        public float GetSpeedDecrease => _unitSpeedDecrease;
 
         public void Initialize(Group group)
         {
@@ -47,7 +49,7 @@ namespace Code.Scripts.Services
         {
             var unit = MakeGroupUnit(unitTransform, settings);
 
-            _points += unit.settings.points;
+            _points += unit.unit.points;
             units.Add(unit);
             Sort();
         }
@@ -56,9 +58,9 @@ namespace Code.Scripts.Services
         {
             var unit = new GroupUnit
             {
-                settings = settings,
+                unit = settings,
                 objectTransform = unitTransform,
-                speed = _unitSpeed
+                Speed = _unitSpeed - _unitSpeedDecrease
             };
             
             unit.objectTransform.parent = _group._groupTransform;
@@ -69,7 +71,7 @@ namespace Code.Scripts.Services
 
         public void Remove(int points)
         {
-            var unit = units.FirstOrDefault(x => x.settings.points.Equals(points));
+            var unit = units.FirstOrDefault(x => x.unit.points.Equals(points));
             Remove(unit);
         }
 
@@ -77,13 +79,18 @@ namespace Code.Scripts.Services
         {
             if (unit != null)
             {
-                _points -= unit.settings.points;
+                _points -= unit.unit.points;
                 GroupHelpers.ProvideUnitDestruction(unit, ref UnitsUpdateCallback, units);
                 Sort();
                 _group.OnChange?.Invoke();
             }
         }
         
-        private void Sort() => units = units.OrderByDescending(x => x.settings.points).ToList();
+        private void Sort() => units = units.OrderByDescending(x => x.unit.points).ToList();
+
+        private void CorrectUnitsSpeed()
+        {
+            
+        }
     }
 }
