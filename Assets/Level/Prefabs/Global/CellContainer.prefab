@@ -42,8 +42,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1898067205608126726}
   - component: {fileID: 1898067205608126724}
-  - component: {fileID: 1898067205608126725}
-  m_Layer: 0
+  - component: {fileID: 1837454189115149575}
+  m_Layer: 16
   m_Name: CellContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,33 +79,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcf797a55454428d8f404aee34426bb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  isReleasedByDefault: 0
   _groupTransform: {fileID: 1898067206138955378}
   _cellUnits:
   - {fileID: 11400000, guid: 72361c3e40d92a646888083fe24b493e, type: 2}
   - {fileID: 11400000, guid: 72361c3e40d92a646888083fe24b493e, type: 2}
   - {fileID: 11400000, guid: 72361c3e40d92a646888083fe24b493e, type: 2}
-  _releaseService:
-    _playerMask:
-      serializedVersion: 2
-      m_Bits: 139264
-    _overlapRaius: 4
-    isReleasable: 0
---- !u!114 &1898067205608126725
-MonoBehaviour:
+  _group:
+    _unitsLimit: 10
+    _unitSpeed: 0
+    _groupPosition: {fileID: 0}
+    _groupTransform: {fileID: 1898067206138955378}
+    formation: {fileID: 11400000, guid: e847549b3439a49459c0853794f7f6e8, type: 2}
+--- !u!135 &1837454189115149575
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1898067205608126727}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9e9137099b3480d910b00560e951a6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isVisible: 1
-  _playerOverlapPosition: {x: 0, y: 1, z: 0}
-  _playerOverlapRadius: 4
+  serializedVersion: 2
+  m_Radius: 5
+  m_Center: {x: 0.5, y: 5, z: 0.3}
 --- !u!1 &1898067206138955379
 GameObject:
   m_ObjectHideFlags: 0

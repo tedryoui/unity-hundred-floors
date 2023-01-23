@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
 using Code.Scripts.Core;
+using Code.Scripts.Core.Player;
 using Code.Scripts.Units;
 using UnityEngine;
 using Object = System.Object;
@@ -11,122 +12,153 @@ using Random = System.Random;
 
 namespace Code.Scripts.Services
 {
-    [Serializable]
-    public class BattleService
+    public class BattleService : MonoBehaviour
     {
+        [SerializeField] private float _despawnDelay;
         [SerializeField] private CinemachineVirtualCamera _vCam;
         [SerializeField] private GameObject _smokePrefab;
-        
-        private Player _player;
+
+        private Player Player => GameCore.GetPlayer;
+        private int PlayerPoints => Player.Group.Points;
+        private int SpotPoints => _spot.Group.Points;
+        private List<GroupUnit> PlayerUnits => Player.Group.Units;
+        private List<GroupUnit> SpotUnits => _spot.Group.Units;
+
         private Spot _spot;
-        private GameObject _particle;
-        
-        private int GetPlayerPoints => _player.Group.GroupService.GetPoints;
-        private List<GroupUnit> GetPlayerUnits => _player.Group.GroupService.units;
-        private int GetSpotPoints => _spot.Group.GroupService.GetPoints;
-        private List<GroupUnit> GetSpotUnits => _spot.Group.GroupService.units;
+        private ParticleSystem _smoke;
 
-
-        public void Initialize(Player player)
+        private ParticleSystem GetSmokeObject
         {
-            _player = player;
+            get
+            {
+                if (_smoke == null)
+                {
+                    GameObject smoke = Instantiate(_smokePrefab, Vector3.zero, Quaternion.identity);
+                    _smoke = smoke.GetComponent<ParticleSystem>();
+                }
+
+                return _smoke;
+            }
+        }
+
+        private List<BattleUnit> _battleUnits;
+
+        private void Awake()
+        {
+            GameState.CrrGameState.OnStateChanged += OnGameStateChanged;
+        }
+
+        private void OnGameStateChanged(GameState.GameStateValue state)
+        {
+            enabled = state == GameState.GameStateValue.Battle;
+        }
+
+        private void OnDestroy()
+        {
+            GameState.CrrGameState.OnStateChanged -= OnGameStateChanged;
+        }
+
+        private void Update()
+        {
+            foreach (var battleUnit in _battleUnits)
+            {
+                battleUnit.Update();
+            }
         }
 
         public void InvokeBattle(Spot spot)
         {
             _spot = spot;
-            _player.StartCoroutine(StartBattle());
-        }
-        
-        private IEnumerator StartBattle()
-        {
-            AddParticles();
-            FocusBattle();
-            MatchUnits();
+            
+            var minority = ShuffleLists(PlayerUnits);
+            var majority = ShuffleLists(SpotUnits);
 
-            yield return _player.StartCoroutine(ProcessBattle());
-            
-            MismatchUnits();
-            RemoveParticles();
-            UnfocusBattle();
+            if (minority.Count > majority.Count)
+                SwapLists(minority, majority);
+
+            _battleUnits = new List<BattleUnit>(minority.Count);
+
+            for (var i = 0; i < minority.Count; i++)
+            {
+                _battleUnits.Add(new BattleUnit(minority[i]));
+            }
+
+            for (int i = 0; i < majority.Count; i++)
+            {
+                _battleUnits[i % minority.Count].AddAttacker(majority[i]);
+            }
+
+            GameState.CrrGameState.ActiveStateValue = GameState.GameStateValue.Battle;
+            SpawnSmoke();
+
+            StartCoroutine(WaitForReady());
         }
 
-        private IEnumerator ProcessBattle()
+        private IEnumerator WaitForReady()
         {
-            bool isSpotWins = GetSpotPoints > GetPlayerPoints;
+            yield return new WaitWhile(() =>
+            {
+                foreach (var battleUnit in _battleUnits)
+                {
+                    if (!battleUnit.IsReady())
+                        return true;
+                }
+
+                return false;
+            });
             
-            yield return _player.StartCoroutine(ProcessLogics());
-            
-            if (isSpotWins)
-                _player.Kill();
-            else
-                _spot.Kill();
+            StartCoroutine(ProcessLogics());
         }
 
         private IEnumerator ProcessLogics()
         {
             // Getting target points for the player, to know point where we need to stop disposing units
-            var targetPoints = GetPlayerPoints - GetSpotPoints;
+            var targetPoints = PlayerPoints - SpotPoints;
 
             // Disposing player unit while player group points after changes doesn`t touch target points AND
             // while player have any unit in his group
-            while (GetPlayerUnits.Count != 0 && 
-                   GetPlayerPoints - GetPlayerUnits[^1].unit.points >= targetPoints)
+            while (PlayerUnits.Count != 0 && 
+                   PlayerPoints - PlayerUnits[^1].Preset.points >= targetPoints)
             {
-                // Removing last (the lowest by points) unit in player`s and spot`s groups
-                if(GetSpotUnits.Count != 0)
-                    _spot.Group.GroupService.Remove(GetSpotUnits[^1].unit.points);
-                _player.Group.GroupService.Remove(GetPlayerUnits[^1].unit.points);
-
                 // Waiting for some time, to make "realtime" battle
-                yield return new WaitForSeconds(0.75f);
+                yield return new WaitForSeconds(_despawnDelay);
+                
+                // Removing last (the lowest by points) unit in player`s and spot`s groups
+                if(SpotUnits.Count != 0)
+                    _spot.Group.Remove(SpotUnits[^1].Preset.points);
+                Player.Group.Remove(PlayerUnits[^1].Preset.points);
             }
+            
+            
+            if(targetPoints <= 0)
+                Player.ChangeState(Player.DeadState);
+            else 
+                _spot.ChangeState(_spot.DeadState);
+
+            CompleteBattle();
+        }
+
+        private void SpawnSmoke()
+        {
+            var playerPosition = Player.transform.position;
+            var spotPosition = _spot.transform.position;
+            var distance = spotPosition - playerPosition;
+            var smokePosition = playerPosition + (distance / 2.0f) + Vector3.up * 3;
+
+            GetSmokeObject.transform.position = smokePosition;
+            GetSmokeObject.Play();
         }
         
-        private void MatchUnits()
+        private void CompleteBattle()
         {
-            var attackers = ShuffleUnits(GetPlayerUnits);
-            var defenders = ShuffleUnits(GetSpotUnits);
+            GetSmokeObject.Stop();
+            GetSmokeObject.transform.position = Vector3.zero;
 
-            if (attackers.Count < defenders.Count)
-                SwapLists(attackers, defenders);
-
-            PerformMatching(attackers, defenders);
-        }
-
-        private void PerformMatching(List<GroupUnit> attackers, List<GroupUnit> defenders)
-        {
-            for (int i = 0; i < attackers.Count; i++)
-            {
-                var spotUnitIndex = i % defenders.Count;
-                var spotUnit = defenders[spotUnitIndex];
-                var playerUnit = attackers[i];
-
-                playerUnit.SetBattleState(spotUnit.objectTransform, spotUnit.unit.triggerRadius);
-                spotUnit.SetBattleState(playerUnit.objectTransform, playerUnit.unit.triggerRadius);
-            }
-        }
-
-        private void MismatchUnits()
-        {
-            var playerUnits = GetPlayerUnits;
-            var spotUnits = GetSpotUnits;
+            foreach (var battleUnit in _battleUnits)
+                battleUnit.ResetUnits();
+            _battleUnits.Clear();
             
-            if(!ReferenceEquals(_player, null))
-                foreach (var playerUnit in playerUnits)
-                    playerUnit.RemoveBattleState();
-            
-            if(!ReferenceEquals(_spot, null))
-                foreach (var groupUnit in spotUnits)
-                    groupUnit.RemoveBattleState();
-        }
-
-        private List<GroupUnit> ShuffleUnits(List<GroupUnit> units)
-        {
-            var random = new Random();
-            var randomized = units.OrderBy(item => random.Next());
-
-            return randomized.ToList();
+            GameState.CrrGameState.ActiveStateValue = GameState.GameStateValue.Gameplay;
         }
 
         private void SwapLists(List<GroupUnit> first, List<GroupUnit> second)
@@ -141,41 +173,12 @@ namespace Code.Scripts.Services
             second.AddRange(temp);
         }
         
-        private void AddParticles()
+        private List<GroupUnit> ShuffleLists(List<GroupUnit> units)
         {
-            var position = _player.transform.position + (_spot.transform.position - _player.transform.position) / 2;
-            var rotation = Quaternion.Euler(-90, 0, 0);
-            
-            GameObject smoke = GameObject.Instantiate(_smokePrefab, position, rotation);
-            smoke.SetActive(true);
+            var random = new Random();
+            var randomized = units.OrderBy(item => random.Next());
 
-            _particle = smoke;
-        }
-        
-        private void RemoveParticles()
-        {
-            var particleSystem = _particle.GetComponent<ParticleSystem>();
-            particleSystem.Stop();
-        }
-        
-        private void UnfocusBattle()
-        {
-            _player.state = Player.State.Free;
-            _spot.state = Spot.State.Free;
-            
-            _vCam.Priority = 0;
-        }
-
-        private void FocusBattle()
-        {
-            _player.state = Player.State.Battle;
-            _spot.state = Spot.State.Battle;
-
-            _vCam.Priority = 100;
-            _vCam.Follow = _particle.transform;
-            _vCam.LookAt = _particle.transform;
-            CinemachineTransposer transposer = _vCam.GetCinemachineComponent<CinemachineTransposer>();
-            transposer.m_FollowOffset = new Vector3(0, 20, -10);
+            return randomized.ToList();
         }
     }
 }

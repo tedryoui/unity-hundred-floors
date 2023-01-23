@@ -1,4 +1,5 @@
 ﻿using System;
+using Code.Scripts.State.UnitStates;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,66 +8,47 @@ namespace Code.Scripts.Units
     [Serializable]
     public class GroupUnit
     {
-        public enum State { Stay, Chase, Battle }
-        
-        public Transform objectTransform;
-        public Unit unit;
-        public State state = State.Chase;
-        private NavMeshAgent _navMeshAgent;
+        public Transform Transform { get; private set; }
+        public Unit Preset { get; private set; }
 
-        public NavMeshAgent GetNavMeshAgent => _navMeshAgent ??= objectTransform.GetComponent<NavMeshAgent>();
+        private State.State CrrState = null;
+        public State.State FollowState { get; private set; }
+        
+        private NavMeshAgent _navMeshAgent;
+        public NavMeshAgent GetNavMeshAgent => _navMeshAgent ??= Transform.GetComponent<NavMeshAgent>();
+
+        private float speed;
         public float Speed {
-            get => GetNavMeshAgent.speed;
-            set => GetNavMeshAgent.speed = value;
+            get => speed;
+            set => speed = value;
         }
 
-        private Vector3 _chaseTarget;
-        private Transform _battleTarget;
-        private float _battleTriggerRadius;
+        public Vector3 targetPosition;
 
-        public Vector3 TargetPosition
+        public GroupUnit(Unit preset, Transform unitObject)
         {
-            get => _chaseTarget;
-            set => _chaseTarget = value;
+            this.Preset = preset;
+            this.Transform = unitObject;
+            
+            Transform.gameObject.SetActive(false);
+            Transform.gameObject.SetActive(true);
+
+            FollowState = new FollowState(this);
+
+            CrrState = FollowState;
         }
 
         public void Update()
         {
-            switch (state)
-            {
-                case State.Chase:
-                    GetNavMeshAgent.SetDestination(TargetPosition);
-                    break;
-                case State.Battle:
-                    Attack();
-                    break;
-            }
+            if (ReferenceEquals(Transform, null)) 
+                return;
+
+            CrrState.Process();
         }
 
-        private void Attack()
+        public void WarpToTarget()
         {
-            if (_battleTarget == null)
-            {
-                RemoveBattleState();
-            }
-            else
-            {
-                GetNavMeshAgent.SetDestination(_battleTarget.position);
-            }
-        }
-
-        public void SetBattleState(Transform unitObjectTransform, float triggerRadius)
-        {
-            _battleTarget = unitObjectTransform;
-            GetNavMeshAgent.stoppingDistance = triggerRadius;
-            state = State.Battle;
-        }
-
-        public void RemoveBattleState()
-        {
-            _battleTarget = null;
-            GetNavMeshAgent.stoppingDistance = 0.0f;
-            state = State.Chase;
+            GetNavMeshAgent.Warp(targetPosition);
         }
     }
 }

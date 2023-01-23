@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using Code.Scripts.Core;
+using Code.Scripts.Core.Player;
 using Code.Scripts.Units;
 using UnityEngine;
 using UnityEngine.Events;
@@ -20,9 +21,14 @@ namespace Code.Scripts.Cutscenes
 
         private void Start()
         {
+            _vCam.Priority = 100;
+            
             CatchPlayer();
             SetupCamera();
-            
+        }
+
+        public void InvokeCutscene()
+        {
             StartCutscene();
         }
 

@@ -10,18 +10,10 @@ namespace Code.Scripts.Gui.ViewModels
     {
         [SerializeField] private StartPanelView _view;
 
-        public void Pause()
-        {
-            _view.gameObject.SetActive(true);
-            Time.timeScale = 0.0f;
-            GameCore.GetPlayer.enabled = false;
-        }
-
         public void Resume()
         {
             _view.gameObject.SetActive(false);
-            Time.timeScale = 1.0f;
-            GameCore.GetPlayer.enabled = true;
+            GameState.CrrGameState.ActiveStateValue = GameState.GameStateValue.Gameplay;
         }
     }
 }

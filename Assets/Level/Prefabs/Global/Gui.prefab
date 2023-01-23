@@ -85,7 +85,19 @@ MonoBehaviour:
   m_Group: {fileID: 7619159441319599221}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1786703194529596667}
+        m_TargetAssemblyTypeName: Code.Scripts.Services.GuiHandler, Assembly-CSharp
+        m_MethodName: EnableDynamicStick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &1786703193295588996
 GameObject:
@@ -140,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movableStickRoot: {fileID: 5731013071288177684}
-  movableStick: {fileID: 0}
+  movableStick: {fileID: 9120584686066983449}
   staticStick: {fileID: 333236897444725464}
 --- !u!222 &1786703193295588992
 CanvasRenderer:
@@ -356,6 +368,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stickViewModel:
     _view: {fileID: 1786703193295588998}
+  _startPanelViewModel:
+    _view: {fileID: 8416737987135186359}
 --- !u!1 &2882540376525672468
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,8 +721,20 @@ MonoBehaviour:
   m_Group: {fileID: 7619159441319599221}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
-  m_IsOn: 1
+      m_Calls:
+      - m_Target: {fileID: 1786703194529596667}
+        m_TargetAssemblyTypeName: Code.Scripts.Services.GuiHandler, Assembly-CSharp
+        m_MethodName: EnableStaticStick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_IsOn: 0
 --- !u!1 &5327359594799782979
 GameObject:
   m_ObjectHideFlags: 0
@@ -894,6 +920,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d644b4c056d7474f85018937bec15676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1786703194529596667}
+        m_TargetAssemblyTypeName: Code.Scripts.Services.GuiHandler, Assembly-CSharp
+        m_MethodName: ResumeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Code.Scripts.Cutscenes.QueueCutscene, Assembly-CSharp
+        m_MethodName: InvokeCutscene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &8013603018249194246
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -915,7 +968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.53333336}
+  m_Color: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 0.53333336}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1112,7 +1165,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8521140814561462441}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

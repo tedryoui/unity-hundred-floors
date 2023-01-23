@@ -24,8 +24,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1530352437274953339}
-  m_LocalRotation: {x: 0.54127437, y: 0.047867414, z: -0.030888977, w: 0.838914}
-  m_LocalPosition: {x: -12.0853615, y: 173.68433, z: -82.97678}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -49,7 +49,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 9
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -224,24 +224,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d8ff8f2e7c04eaea83c0ab989a861c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
   speed: 7
-  _group:
-    _parentTransform: {fileID: 0}
-    _groupTransform: {fileID: 6009375886772982575}
-    _formationService:
-      _baseOrbitUnitAmount: 6
-      _orbitUnitIncreaseAmount: 4
-      _orbitAngleOffset: 90
-      _orbitOffset: 2.5
-    _groupService:
-      _unitsLimit: 10
-      _unitSpeed: 5
-      units: []
+  unitSpeedDifference: 2
+  playerColliderMultiplier: 4
+  _interactor:
+    _interactablesLayerMask:
+      serializedVersion: 2
+      m_Bits: 65536
+    _maxInteractionsPerFrame: 5
   _cameraService:
     _vCam: {fileID: 3722240228253140446}
-    _baseVerticalArmLength: 7.5
-    _baseCameraDistance: 7.5
+    _groupRadiusDelemeter: 4.5
+    _baseVerticalArmLength: 20
+    _baseCameraDistance: 20
+  _group:
+    _unitsLimit: 10
+    _unitSpeed: 7
+    _groupPosition: {fileID: 0}
+    _groupTransform: {fileID: 6009375886772982575}
+    formation: {fileID: 11400000, guid: 3492440ba1c881241875ed2eaead0044, type: 2}
 --- !u!1 &6009375886772982568
 GameObject:
   m_ObjectHideFlags: 0

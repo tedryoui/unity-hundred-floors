@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6844460550833371649}
   - component: {fileID: 6844460550833371650}
-  m_Layer: 0
+  - component: {fileID: 2448106986363265041}
+  m_Layer: 16
   m_Name: Spot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,26 +45,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44b386c2ff854dc5adcf125cbee08e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerMask:
-    serializedVersion: 2
-    m_Bits: 131072
+  spotColliderMultiplier: 4
   _group:
-    _parentTransform: {fileID: 0}
+    _unitsLimit: 10
+    _unitSpeed: 10
+    _groupPosition: {fileID: 0}
     _groupTransform: {fileID: 6844460552643008341}
-    _formationService:
-      _baseOrbitUnitAmount: 3
-      _orbitUnitIncreaseAmount: 3
-      _orbitAngleOffset: 135
-      _orbitOffset: 2.5
-    _groupService:
-      _unitsLimit: 10
-      _unitSpeed: 0.5
-      units: []
-  isDead: 0
-  onSpotDead:
+    formation: {fileID: 11400000, guid: 3492440ba1c881241875ed2eaead0044, type: 2}
+  OnSpotDead:
     m_PersistentCalls:
       m_Calls: []
-  state: 0
+--- !u!135 &2448106986363265041
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6844460550833371648}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6844460552576294766
 GameObject:
   m_ObjectHideFlags: 0
