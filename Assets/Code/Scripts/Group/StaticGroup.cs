@@ -11,9 +11,9 @@ namespace Code.Scripts.Core
         public override Formation Formation => formation;
         public override float GroupSize => Formation.FormationSize;
 
-        public override void Initialize(Transform parentTransform)
+        public override void Initialize(Entity parentEntity, Transform parentTransform)
         {
-            base.Initialize(parentTransform);
+            base.Initialize(parentEntity, parentTransform);
 
             OnChange += MoveUnits;
             

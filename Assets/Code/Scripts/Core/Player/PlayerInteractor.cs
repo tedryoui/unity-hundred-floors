@@ -18,7 +18,7 @@ namespace Code.Scripts.Core.Player
             // interactables layer mask
             Collider[] colliders = new Collider[_maxInteractionsPerFrame];
             Physics.OverlapSphereNonAlloc(GetPlayerPosition, GetPlayerRadius, colliders, _interactablesLayerMask);
-            
+
             foreach (var collider in colliders)
             {
                 if (collider != null)

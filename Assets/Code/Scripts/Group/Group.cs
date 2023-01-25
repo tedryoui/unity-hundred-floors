@@ -10,12 +10,15 @@ namespace Code.Scripts.Core
     [Serializable]
     public abstract class Group
     {
-        protected List<GroupUnit> _units = new();
-        public int Points { get; protected set; }
-        [SerializeField] protected int _unitsLimit;
-        [SerializeField] protected float _unitSpeed;
+        private Entity _parentEntity;
+        
         [HideInInspector] public Transform _groupPosition;
         [SerializeField] public Transform _groupTransform;
+        
+        protected List<GroupUnit> _units = new();
+        
+        [SerializeField] protected int _unitsLimit;
+        [SerializeField] protected float _unitSpeed;
         
         public abstract Formation Formation { get; }
 
@@ -25,8 +28,9 @@ namespace Code.Scripts.Core
         public List<GroupUnit> Units => _units;
         public abstract float GroupSize { get; }
 
-        public virtual void Initialize(Transform parentTransform)
+        public virtual void Initialize(Entity parentEntity, Transform parentTransform)
         {
+            _parentEntity = parentEntity;
             _groupPosition = parentTransform;
         }
 
@@ -73,7 +77,7 @@ namespace Code.Scripts.Core
             OnUpdate += unit.Update;
             
             // Add unit to the list and change points count
-            Points += unit.Preset.points;
+            _parentEntity.PointsStat.AddStatValue(unit.Preset.points);
             _units.Add(unit);
             
             SortUnitsList();
@@ -88,7 +92,7 @@ namespace Code.Scripts.Core
             if (unit != null)
             {
                 // Decrease points
-                Points -= unit.Preset.points;
+                _parentEntity.PointsStat.RemoveStatValue(unit.Preset.points);
                 
                 // Unsub from group events
                 OnUpdate -= unit.Update;

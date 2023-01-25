@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using Code.Scripts.Core.Player;
 using Code.Scripts.Cutscenes;
 using Code.Scripts.Services;
-using Code.Scripts.State.GenericStates;
-using Code.Scripts.State.SpotStates;
+using Code.Scripts.States;
+using Code.Scripts.States.GenericStates;
+using Code.Scripts.States.SpotStates;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,8 +19,8 @@ namespace Code.Scripts.Core
         [SerializeField] private StaticGroup _group;
         public override Group Group => _group;
         
-        public State.State MoveState { get; private set; }
-        public State.State DeadState { get; private set; }
+        public State MoveState { get; private set; }
+        public State DeadState { get; private set; }
 
         public UnityEvent OnSpotDead;
         public Action<ITaskable> OnTaskProgressed { get; set; }

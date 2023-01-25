@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
-using Code.Scripts.State.PlayerStates;
-using Code.Scripts.State.PlayerStates.MergeStates;
+using Code.Scripts.States;
+using Code.Scripts.States.PlayerStates;
+using Code.Scripts.States.PlayerStates.MergeStates;
+using Code.Scripts.Stats;
 using Code.Scripts.Units;
 using UnityEngine;
 
@@ -16,17 +18,21 @@ namespace Code.Scripts.Core.Player
         
         [Space(10)]
         [SerializeField] private DynamicGroup _group;
+
+        [Space(10)] 
+        [SerializeField] private PlayerStats _stats;
         
         [Space(10)]
-        public float speed;
         public float unitSpeedDifference = 2;
         public float playerColliderMultiplier = 4.0f;
 
-        public State.State MoveState { get; private set; }
-        public State.State DeadState { get; private set; }
+        public State MoveState { get; private set; }
+        public State DeadState { get; private set; }
         public MergeState MergeState { get; private set;}
         
         public override Group Group => _group;
+
+        [field: SerializeField] public VulnerableStat SpeedStat { get; private set; }
 
         protected override void Awake()
         {
@@ -46,6 +52,7 @@ namespace Code.Scripts.Core.Player
 
         protected override void Update()
         {
+            ChangeUnitsSpeed();
             base.Update();
             
             _cameraService.Update();
@@ -60,7 +67,7 @@ namespace Code.Scripts.Core.Player
         private void ChangeUnitsSpeed()
         {
             List<GroupUnit> units = Group.Units;
-            float newSpeed = (speed * Group.GroupSize) - unitSpeedDifference;
+            float newSpeed = (SpeedStat.GetValue * Group.GroupSize) - unitSpeedDifference;
 
             foreach (var groupUnit in units)
                 groupUnit.Speed = newSpeed;

@@ -17,12 +17,15 @@ namespace Code.Scripts.Services
         [SerializeField] private float _despawnDelay;
         [SerializeField] private CinemachineVirtualCamera _vCam;
         [SerializeField] private GameObject _smokePrefab;
+        private GameObject _tempObj;
 
         private Player Player => GameCore.GetPlayer;
-        private int PlayerPoints => Player.Group.Points;
-        private int SpotPoints => _spot.Group.Points;
+        private int PlayerPoints => (int) Player.PointsStat.GetValue;
+        private int SpotPoints => (int) _spot.PointsStat.GetValue;
         private List<GroupUnit> PlayerUnits => Player.Group.Units;
         private List<GroupUnit> SpotUnits => _spot.Group.Units;
+
+        private Vector3 GetFightPosition => _spot.transform.position - Player.transform.position;
 
         private Spot _spot;
         private ParticleSystem _smoke;
@@ -46,6 +49,11 @@ namespace Code.Scripts.Services
         private void Awake()
         {
             GameState.CrrGameState.OnStateChanged += OnGameStateChanged;
+            
+            _tempObj = new GameObject("Battle Position");
+            _tempObj.transform.parent = transform;
+            _vCam.Follow = _tempObj.transform;
+            _vCam.LookAt = _tempObj.transform;
         }
 
         private void OnGameStateChanged(GameState.GameStateValue state)
@@ -68,6 +76,8 @@ namespace Code.Scripts.Services
 
         public void InvokeBattle(Spot spot)
         {
+            Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
             _spot = spot;
             
             var minority = ShuffleLists(PlayerUnits);
@@ -96,6 +106,8 @@ namespace Code.Scripts.Services
 
         private IEnumerator WaitForReady()
         {
+            SetupCamera();
+            
             yield return new WaitWhile(() =>
             {
                 foreach (var battleUnit in _battleUnits)
@@ -106,8 +118,14 @@ namespace Code.Scripts.Services
 
                 return false;
             });
-            
+
             StartCoroutine(ProcessLogics());
+        }
+
+        private void SetupCamera()
+        {
+            _vCam.Priority = 101;
+            _tempObj.transform.position = Player.transform.position + GetFightPosition / 2.0f;
         }
 
         private IEnumerator ProcessLogics()
@@ -126,11 +144,16 @@ namespace Code.Scripts.Services
                 // Removing last (the lowest by points) unit in player`s and spot`s groups
                 if(SpotUnits.Count != 0)
                     _spot.Group.Remove(SpotUnits[^1].Preset.points);
-                Player.Group.Remove(PlayerUnits[^1].Preset.points);
+
+                if (SpotUnits.Count == 0 && !Player.PointsStat.IsVulnerable)
+                    break;
+                
+                if(Player.PointsStat.IsVulnerable)
+                    Player.Group.Remove(PlayerUnits[^1].Preset.points);
             }
             
             
-            if(targetPoints <= 0)
+            if(targetPoints <= 0 && Player.PointsStat.IsVulnerable)
                 Player.ChangeState(Player.DeadState);
             else 
                 _spot.ChangeState(_spot.DeadState);
@@ -157,7 +180,8 @@ namespace Code.Scripts.Services
             foreach (var battleUnit in _battleUnits)
                 battleUnit.ResetUnits();
             _battleUnits.Clear();
-            
+
+            _vCam.Priority = 0;
             GameState.CrrGameState.ActiveStateValue = GameState.GameStateValue.Gameplay;
         }
 

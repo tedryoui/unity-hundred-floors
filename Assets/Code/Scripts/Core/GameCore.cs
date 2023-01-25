@@ -20,6 +20,9 @@ namespace Code.Scripts.Core
         [SerializeField] private Level _level;
         private InputControls _controls;
         
+        // Layer masks
+        [SerializeField] private LayerMask _groundMask;
+        
         // Static properties
         public static Level GetLevel => s_Core._level;
         public static Player.Player GetPlayer => s_Core._player;
@@ -27,6 +30,8 @@ namespace Code.Scripts.Core
         public static GuiHandler GetGuiHandler => s_Core._guiHandler;
         public static InputControls GetInput => s_Core._controls;
 
+        public static LayerMask GetGroundMask => s_Core._groundMask;
+        
         // On level created callback
         public static Action<Level> OnLevelInstantiated;
 

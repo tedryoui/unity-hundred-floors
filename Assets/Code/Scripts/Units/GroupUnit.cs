@@ -1,5 +1,6 @@
 ﻿using System;
-using Code.Scripts.State.UnitStates;
+using Code.Scripts.States;
+using Code.Scripts.States.UnitStates;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,8 +12,8 @@ namespace Code.Scripts.Units
         public Transform Transform { get; private set; }
         public Unit Preset { get; private set; }
 
-        private State.State CrrState = null;
-        public State.State FollowState { get; private set; }
+        private State CrrState = null;
+        public State FollowState { get; private set; }
         
         private NavMeshAgent _navMeshAgent;
         public NavMeshAgent GetNavMeshAgent => _navMeshAgent ??= Transform.GetComponent<NavMeshAgent>();

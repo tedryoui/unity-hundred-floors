@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Code.Scripts.Core.Player;
 using Code.Scripts.Services;
+using Code.Scripts.States;
 using UnityEngine;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
@@ -16,8 +17,8 @@ namespace Code.Scripts.Core
         [SerializeField] private Transform _groupTransform;
         [SerializeField] private List<Unit> _cellUnits;
 
-        private State.State _releasableState;
-        private State.State _unreleasableState;
+        private State _releasableState;
+        private State _unreleasableState;
         
 
         [SerializeField] private StaticGroup _group;
@@ -65,7 +66,7 @@ namespace Code.Scripts.Core
         }
     }
 
-    internal class ReleasableState : State.State
+    internal class ReleasableState : State
     {
         private Cell _actor;
 
@@ -92,7 +93,7 @@ namespace Code.Scripts.Core
         }
     }
 
-    internal class UnreleasableState : State.State
+    internal class UnreleasableState : State
     {
         public override void Process()
         {
