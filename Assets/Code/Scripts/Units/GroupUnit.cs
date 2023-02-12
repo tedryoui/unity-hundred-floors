@@ -1,128 +1,55 @@
 ﻿using System;
+using Code.Scripts.States;
+using Code.Scripts.States.UnitStates;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Code.Scripts.Units
 {
     [Serializable]
     public class GroupUnit
     {
-        public enum State { Stay, Chase, Battle }
+        public Transform Transform { get; private set; }
+        public Unit Preset { get; private set; }
+
+        private State CrrState = null;
+        public State FollowState { get; private set; }
         
-        public Transform objectTransform;
-        public Unit settings;
-        public float speed;
-        public State state = State.Chase;
+        private NavMeshAgent _navMeshAgent;
+        public NavMeshAgent GetNavMeshAgent => _navMeshAgent ??= Transform.GetComponent<NavMeshAgent>();
 
-        private CapsuleCollider _collider;
-        private Rigidbody _rb;
-
-        public Rigidbody GetRb
-        {
-            get
-            {
-                if (ReferenceEquals(_rb, null)) _rb = objectTransform.GetComponent<Rigidbody>();
-
-                return _rb;
-            }
+        private float speed;
+        public float Speed {
+            get => speed;
+            set => speed = value;
         }
 
-        public CapsuleCollider GetCollider
-        {
-            get
-            {
-                if (ReferenceEquals(_collider, null)) _collider = objectTransform.GetComponent<CapsuleCollider>();
+        public Vector3 targetPosition;
 
-                return _collider;
-            }
-        }
-        
-        //
-        // Chase settings
-        //
-        private Vector3 _chaseTarget;
-        
-        //
-        // Battle settings
-        //
-        private Transform _battleTargetTransform;
-        private float _battleTriggerRadius;
-
-        public Vector3 TargetPosition
+        public GroupUnit(Unit preset, Transform unitObject)
         {
-            get => _chaseTarget;
-            set => _chaseTarget = value;
+            this.Preset = preset;
+            this.Transform = unitObject;
+            
+            Transform.gameObject.SetActive(false);
+            Transform.gameObject.SetActive(true);
+
+            FollowState = new FollowState(this);
+
+            CrrState = FollowState;
         }
 
         public void Update()
         {
-            switch (state)
-            {
-                case State.Chase:
-                    Chase(_chaseTarget);
-                    break;
-                case State.Battle:
-                    Battle();
-                    break;
-            }
-        }
-
-        private void Battle()
-        {
-            if (_battleTargetTransform == null)
-            {
-                state = State.Chase;
+            if (ReferenceEquals(Transform, null)) 
                 return;
-            }
-            
-            var dist = Vector3.Distance(objectTransform.position, _battleTargetTransform.position);
-            var triggerRadius = settings.triggerRadius + _battleTriggerRadius;
-            
-            if (dist > triggerRadius)
-                ChaseUnit();
-            else
-                Attack();
+
+            CrrState.Process();
         }
 
-        private void ChaseUnit()
+        public void WarpToTarget()
         {
-            Chase(_battleTargetTransform.position);
-        }
-
-        private void Attack()
-        {
-            GetRb.velocity = Vector3.zero;
-        }
-
-        private void Chase(Vector3 targetPosition)
-        {
-            var position = objectTransform.position;
-
-            var dst = Vector3.Distance(position, targetPosition);
-            if (dst >= 0.5f)
-            {
-                var smoothSpeed = (dst * speed);
-                GetRb.velocity = (targetPosition - position).normalized * smoothSpeed;
-            }
-            else
-            {
-                GetRb.velocity = Vector3.zero;
-            }
-        }
-
-        public void SetBattleState(Transform unitObjectTransform, float triggerRadius)
-        {
-            _battleTargetTransform = unitObjectTransform;
-            _battleTriggerRadius = triggerRadius;
-            GetCollider.isTrigger = false;
-            state = State.Battle;
-        }
-
-        public void RemoveBattleState()
-        {
-            _battleTargetTransform = null;
-            _battleTriggerRadius = 0.0f;
-            GetCollider.isTrigger = true;
-            state = State.Chase;
+            GetNavMeshAgent.Warp(targetPosition);
         }
     }
 }

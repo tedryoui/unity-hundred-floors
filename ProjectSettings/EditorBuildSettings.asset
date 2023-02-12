@@ -5,12 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Level/Scenes/TestScene.unity
-    guid: 9f6726e9048345b4ca4c1fe82272f824
+    path: Assets/Level/Scenes/Hub.unity
+    guid: bcf67fdc43403914fa58857c8f7c5172
+  - enabled: 1
+    path: Assets/Level/Scenes/Level1.unity
+    guid: 85e82d23369e6bc45a60959cea4754f5
+  - enabled: 1
+    path: Assets/Level/Scenes/HubTiny.unity
+    guid: 78ea4fd1278b7a241991d9a23b8df174
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 11de45a976ceaba43aaf4ce48ab1e684,
       type: 2}

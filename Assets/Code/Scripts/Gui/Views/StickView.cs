@@ -2,22 +2,20 @@
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Code.Scripts.Gui.Views
 {
-    public class StickView : MonoBehaviour, IPointerDownHandler
+    public class StickView : MonoBehaviour
     {
-        [FormerlySerializedAs("movableStick")] 
-        public GameObject movableStickRoot;
+        [Header("Dynamic Stick Images")]
+        public Image dynamicRaycastAreaImage;
+        public Image dynamicStickImage;
+        public Image dynamicBackgroundImage;
         
-        public MovableOnScreenStick movableStick;
-        
-        public GameObject staticStick;
-
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            Debug.Log("Here 2");
-        }
+        [Space(20)]
+        [Header("Static Stick Images")]
+        public Image staticStickImage;
+        public Image staticBackgroundImage;
     }
 }

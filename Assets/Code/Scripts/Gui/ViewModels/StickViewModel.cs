@@ -18,31 +18,18 @@ namespace Code.Scripts.Gui.ViewModels
         [SerializeField] private StickView _view;
 
         private ActivatedStick _stick = ActivatedStick.Static;
-        private InputControls _controls => GameCore.GetInput;
         
-        public void ActivateStaticStick()
+        public void EnableStaticStick(bool state)
         {
-            _view.movableStickRoot.SetActive(false);
-            _view.staticStick.SetActive(true);
-            _stick = ActivatedStick.Static;
+            _view.staticStickImage.enabled = state;
+            _view.staticBackgroundImage.enabled = state;
         }
 
-        public void ActivateDynamicStick()
+        public void ActivateDynamicStick(bool state)
         {
-            _view.movableStickRoot.SetActive(true);
-            _view.staticStick.SetActive(false);
-            _stick = ActivatedStick.Dynamic;
-        }
-
-        public void UpdateStick()
-        {
-            
-        }
-
-        public Vector2 GetStickDirection()
-        {
-            var direction = _controls.Stick.Direction.ReadValue<Vector2>();
-            return direction;
+            _view.dynamicRaycastAreaImage.enabled = state;
+            _view.dynamicStickImage.enabled = state;
+            _view.dynamicBackgroundImage.enabled = state;
         }
     }
 }
